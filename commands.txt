@@ -1,0 +1,29 @@
+
+Compilation commands to run in cosmolattice/build:
+
+1.) No paralellisation:
+rm CMakeCache.txt && cmake -DMODEL=... -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../ && make cosmolattice
+
+2.) Paralellisation in one direction:
+rm CMakeCache.txt && cmake -DMPI=ON -DMODEL=... -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../ && make cosmolattice
+
+2.) Paralellisation in two directions:
+rm CMakeCache.txt && cmake -DMPI=ON -DPFFT=ON -DMODEL=... -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../ && make cosmolattice
+
+Run commands:
+
+1.) No paralellisation:
+./exe input=../src/models/parameter-files/...
+
+2.) Paralellisation in one direction:
+mpirun -n ... exe input=../src/models/parameter-files/...
+
+2.) Paralellisation in two directions:
+mpirun -n ... exe input=../src/models/parameter-files/...
+
+
+
+
+
+Run 5 simulations one after the other and plot:
+./mexhat input=../src/models/parameter-files/mexhat1.in && sleep 1 && ./mexhat input=../src/models/parameter-files/mexhat2.in && sleep 1 && ./mexhat input=../src/models/parameter-files/mexhat3.in && sleep 1 && ./mexhat input=../src/models/parameter-files/mexhat4.in && sleep 1 && ./mexhat input=../src/models/parameter-files/mexhat5.in && cd ../plotting && sleep 1 && python3 gw_last_ts.py
