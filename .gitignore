@@ -1,1 +1,8 @@
 /build
+/dependencies/fftw-3.3.9
+/dependencies/hdf5-1.12.0
+/dependencies/bin
+/dependencies/share
+/dependencies/pfft-1.0.8-alpha
+/dependencies/include
+/dependencies/lib
