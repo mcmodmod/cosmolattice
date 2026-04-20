@@ -3,21 +3,27 @@ expansion = true
 evolver = LF
 
 #Output
-outputfile = ../output/
+outputfile = /work/astro/will/cosmolattice/output/mexhat/mu_MPle-6/
 
 #Model Parameters
-lambda = 0.01
-mu = 1
+lambda = 8.33e-10
+mu = 2.44e12
+
+# mu=2.44E+16   lam=8.33E-02
+# mu=2.44E+14   lam=8.33E-06
+# mu=2.44E+12   lam=8.33E-10
+# mu=2.44E+10   lam=8.33E-14
+
 
 #Lattice
-N = 32
-dt = 0.05
+N = 64
+dt = 0.001
 kIR = 0.1
 
 #Times
-tOutputFreq = 10
-tOutputInfreq = 10
-tMax = 100
+tOutputFreq = 1
+tOutputInfreq = 1
+tMax = 200
 baseSeed = 1234
 
 #Power spectrum options

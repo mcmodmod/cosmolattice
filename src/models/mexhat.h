@@ -147,7 +147,7 @@ public:
   // the compiler figure out on itself what is the actual return type of the
   // function.
   {
-    return 0.25 * pow<4>(fldS(0_c)) - 0.5 * pow<2>(fldS(0_c)) + 1.0;
+    return 0.25 * pow<4>(fldS(0_c)) - 0.5 * pow<2>(fldS(0_c)) + 0.25;
     // Some notations.  The scalar fields are stored in a collection called
     // 'fldS'. The scalar fields are labelled  from 0 to Ns-1. The field say
     // number 1 is accessed through the syntax 'fldS(0_c)'. The function
