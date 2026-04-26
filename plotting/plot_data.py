@@ -250,20 +250,23 @@ def main():
     for mu, lam in zip(mus, lams):
         print(f"{mu=:.2E}   {lam=:.2E}")
 
-    for d, out, omega, f, H in zip(input_dirs, output_dirs, omega_stars, f_stars, Hs):
-        out.mkdir(parents=True, exist_ok=True)
+    if SAVE:
+        for d, out, omega, f, H in zip(
+            input_dirs, output_dirs, omega_stars, f_stars, Hs
+        ):
+            out.mkdir(parents=True, exist_ok=True)
 
-        plot_average_field(out, np.loadtxt(d / "average_scalar_0.txt"))
-        plot_energy_densities(out, np.loadtxt(d / "average_energies.txt"))
+            plot_average_field(out, np.loadtxt(d / "average_scalar_0.txt"))
+            plot_energy_densities(out, np.loadtxt(d / "average_energies.txt"))
 
-        spectra, n_bins, n_spec = load_spectrum(d / "spectra_scalar_0.txt")
-        plot_spectra_numerical(out, spectra, n_bins, n_spec)
-        plot_spectra_physical(out, spectra, n_bins, n_spec, omega, f, H)
+            spectra, n_bins, n_spec = load_spectrum(d / "spectra_scalar_0.txt")
+            plot_spectra_numerical(out, spectra, n_bins, n_spec)
+            plot_spectra_physical(out, spectra, n_bins, n_spec, omega, f, H)
 
-        spectra, n_bins, n_spec = load_spectrum(d / "spectra_gws.txt")
-        plot_gw_spectrum(out, spectra, n_bins, n_spec, H)
+            spectra, n_bins, n_spec = load_spectrum(d / "spectra_gws.txt")
+            plot_gw_spectrum(out, spectra, n_bins, n_spec, H)
 
-        plot_gw_energies(out, np.loadtxt(d / "energy_gws.txt"))
+            plot_gw_energies(out, np.loadtxt(d / "energy_gws.txt"))
 
 
 if __name__ == "__main__":
