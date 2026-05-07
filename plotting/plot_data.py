@@ -3,11 +3,12 @@ import matplotlib.pyplot as plt
 from matplotlib.collections import LineCollection
 from matplotlib.colors import Normalize
 from pathlib import Path
+from get_params_from_mH import lam_from_mu
 
 plt.rcParams.update(
     {
         "text.usetex": True,
-        "axes.labelsize": 20,
+        "axes.labelsize": 23,
         "axes.grid": True,
         "legend.fontsize": 13,
         "xtick.labelsize": 15,
@@ -16,7 +17,7 @@ plt.rcParams.update(
     }
 )
 M_PL = 2.435 * 10 ** (18)
-SAVE = False
+SAVE = True
 
 
 def save_figure(fig, path: Path):
@@ -176,7 +177,7 @@ def plot_spectra_physical(save_dir, spectra, n_bins, n_spectra, omega_star, f_st
         H,
         xlabel=r"$k/H$",
         ylabel=r"$\Delta_{\phi_0}$",
-        ignore=120,
+        ignore=150,
     )
 
     plot_spectrum(
@@ -211,9 +212,9 @@ def plot_gw_spectrum(save_dir, spectra, n_bins, n_spectra, H):
         n_bins,
         n_spectra,
         H,
-        xlabel=r"$\kappa=k/(H\omega_\star)$",
+        xlabel=r"$k/H$",
         ylabel=r"$\Omega_\mathrm{GW}(k,t)$",
-        ignore=15,
+        ignore=20,
         loglog=True,
     )
 
@@ -232,27 +233,25 @@ def plot_gw_energies(save_dir, phiDat, sl=slice(None)):
 
 
 def main():
-    base_dirs = ["mu_MPle-2/", "mu_MPle-4/", "mu_MPle-6/", "mu_MPle-8/"]
+    base_dirs = ["mu11_lam-10", "mu12_lam-8", "mu13_lam-6", "mu14_lam-4"]
+    input_dirs = [Path("../output/mH1e3") / d for d in base_dirs]
+    output_dirs = [Path("./figures/mH1e3") / d for d in base_dirs]
 
-    mH = 100
-    r = mu_over_sqrtlam_from_mH(mH)
-
-    mus = np.array([M_PL * 10 ** (-i) for i in range(2, 9, 2)])
-    lams = (mus / r) ** 2
-
+    mH = 10**3
+    mus = np.array([M_PL * 10 ** (-i) for i in range(4, 8, 1)])
+    lams = np.array([lam_from_mu(mu, mH) for mu in mus])
     omega_stars = mus
     f_stars = omega_stars / np.sqrt(lams)
-    Hs = mus**2 / (np.sqrt(12) * M_PL * np.sqrt(lams))
+    hubbles = mus**2 / (np.sqrt(12) * M_PL * np.sqrt(lams))
 
-    input_dirs = [Path("../output/mexhat") / d for d in base_dirs]
-    output_dirs = [Path("./figures/mexhat") / d for d in base_dirs]
-
+    print(f"Parameter pairs for m/H = {mH:.0E}:")
     for mu, lam in zip(mus, lams):
-        print(f"{mu=:.2E}   {lam=:.2E}")
-
+        print(f"{mu/M_PL=:.2E}   {lam=:.2E}")
     if SAVE:
+        print("SAVE flag is True.")
+        print("Plotting...")
         for d, out, omega, f, H in zip(
-            input_dirs, output_dirs, omega_stars, f_stars, Hs
+            input_dirs, output_dirs, omega_stars, f_stars, hubbles
         ):
             out.mkdir(parents=True, exist_ok=True)
 
@@ -264,10 +263,11 @@ def main():
             plot_spectra_physical(out, spectra, n_bins, n_spec, omega, f, H)
 
             spectra, n_bins, n_spec = load_spectrum(d / "spectra_gws.txt")
-            plot_gw_spectrum(out, spectra, n_bins, n_spec, H)
+            plot_gw_spectrum(out, spectra, n_bins, n_spec, H / omega)
 
             plot_gw_energies(out, np.loadtxt(d / "energy_gws.txt"))
 
 
 if __name__ == "__main__":
     main()
+    print("\nAll done!")
