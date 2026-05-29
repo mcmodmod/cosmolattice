@@ -8,3 +8,4 @@
 /dependencies/lib
 /plotting/figures/
 .ipynb_checkpoints/
+__pycache__/
