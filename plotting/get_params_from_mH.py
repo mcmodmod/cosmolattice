@@ -17,19 +17,16 @@ def lam_from_mu(mu, mH):
 
 def main():
 
-    mHs = np.array([10**i for i in range(3, 5)])
-    rs = mu_over_sqrtlam_from_mH(mHs)
+    mHs = np.array([5] + [10**i for i in range(1, 5)])
 
-    mus = np.array([M_PL * 10 ** (-i) for i in range(1, 9, 1)])
+    mus = np.array([M_PL * 10 ** (-i) for i in range(1, 10, 1)])
 
-    for i, r in enumerate(rs):
-        lams = (mus / r) ** 2
-        print(f"{mHs[i]=:.1E}")
+    for mH in mHs:
+        lams = np.array([lam_from_mu(mu, mH) for mu in mus])
+        print(f"{mH=:.1E}")
         for mu, lam in zip(mus, lams):
             print(f"{mu=:.2E}   {lam=:.2E}")
         print("-----------")
-
-    print(lam_from_mu(mus[0], mHs[0]))
 
 
 if __name__ == "__main__":

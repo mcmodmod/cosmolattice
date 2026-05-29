@@ -26,11 +26,6 @@ def save_figure(fig, path: Path):
     plt.close(fig)
 
 
-def mu_over_sqrtlam_from_mH(mH):
-    """Takes a ratio m/H at the origin and returns the ratio mu/sqrt(lambda)"""
-    return np.sqrt(12) * M_PL / mH
-
-
 def plot_average_field(save_dir, phiDat, sl=slice(None)):
 
     eta = phiDat[sl, 0]
@@ -233,20 +228,17 @@ def plot_gw_energies(save_dir, phiDat, sl=slice(None)):
 
 
 def main():
-    base_dirs = ["mu11_lam-10", "mu12_lam-8", "mu13_lam-6", "mu14_lam-4"]
-    input_dirs = [Path("../output/mH1e3") / d for d in base_dirs]
-    output_dirs = [Path("./figures/mH1e3") / d for d in base_dirs]
+    base_dirs = ["mH1e9/"]
+    input_dirs = [Path("../output") / d for d in base_dirs]
+    output_dirs = [Path("./figures") / d for d in base_dirs]
 
-    mH = 10**3
+    mH = 10**9
     mus = np.array([M_PL * 10 ** (-i) for i in range(4, 8, 1)])
     lams = np.array([lam_from_mu(mu, mH) for mu in mus])
     omega_stars = mus
     f_stars = omega_stars / np.sqrt(lams)
     hubbles = mus**2 / (np.sqrt(12) * M_PL * np.sqrt(lams))
 
-    print(f"Parameter pairs for m/H = {mH:.0E}:")
-    for mu, lam in zip(mus, lams):
-        print(f"{mu/M_PL=:.2E}   {lam=:.2E}")
     if SAVE:
         print("SAVE flag is True.")
         print("Plotting...")
