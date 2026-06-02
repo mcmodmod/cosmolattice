@@ -6,6 +6,5 @@
 /dependencies/pfft-1.0.8-alpha
 /dependencies/include
 /dependencies/lib
-/plotting/figures/
 .ipynb_checkpoints/
 __pycache__/
