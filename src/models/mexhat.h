@@ -112,8 +112,8 @@ public:
 
     // For phi_init=0:
     alpha = 1;
-    fStar = sqrt(pow<2>(mu) / lambda);
-    omegaStar = sqrt(lambda) * fStar;
+    fStar = mu / sqrt(lambda);
+    omegaStar = mu;
     // We now need to specify the rescaling from physical units to program
     // units. This consists of the  time rescaling exponent alpha, the field
     // rescaling fStar and the velocity rescaling omegaStar. See the paper for
