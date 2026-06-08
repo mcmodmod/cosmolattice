@@ -3,21 +3,21 @@ expansion = true
 evolver = LF
 
 #Output
-outputfile = /home/will/cosmolattice/output/mH100/
+outputfile = /home/will/cosmolattice/output/mH1e1/
 
 #Model Parameters
-lambda = 8.33E-14
-mu = 2.44E+10   
+lambda = 8.33E-12
+mu = 2.44E+12   
 
 #Lattice
-N = 32
+N = 64
 dt = 0.01
 kIR = 0.1
 
 #Times
-tOutputFreq = 10
-tOutputInfreq = 10
-tMax = 500
+tOutputFreq = 1
+tOutputInfreq = 1
+tMax = 200
 baseSeed = 1234
 
 #Power spectrum options
