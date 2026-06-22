@@ -12,6 +12,8 @@ rm CMakeCache.txt && cmake -DMPI=ON -DPFFT=ON -DMODEL=mexhat -DCMAKE_EXPORT_COMP
 Sometimes needed extra flag with custom FFTW3 and PFFT installation paths, e.g.:
 -DCMAKE_PREFIX_PATH="/home/will/cosmolattice/dependencies/MyFFTW3;/home/will/cosmolattice/dependencies/MyPFFT"
 
+On home-PC:
+rm CMakeCache.txt && cmake -DMPI=ON -DPFFT=ON -DMODEL=mexhat -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_PREFIX_PATH="/home/morten/GoetheUni/DMGW_Project/cosmolattice/dependencies/MyFFTW3;/home/morten/GoetheUni/DMGW_Project/cosmolattice/dependencies/MyPFFT" -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ../ && make cosmolattice
 
 Run commands:
 

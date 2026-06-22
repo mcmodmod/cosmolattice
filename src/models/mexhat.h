@@ -1,5 +1,5 @@
-#ifndef LPHI4_H // Usual macro guard to prevent multiple inclusion
-#define LPHI4_H
+#ifndef MEXHAT // Usual macro guard to prevent multiple inclusion
+#define MEXHAT
 
 /* This file is part of CosmoLattice, available at www.cosmolattice.net .
    Copyright Daniel G. Figueroa, Adrien Florio, Francisco Torrenti and Wessel
@@ -82,19 +82,13 @@ public:
     // 'par.get<double>("lambda")' we declare a new parameter which needs to be
     // in the input data.  Its name is "lambda" and we specify it is a 'double'.
 
-    // q = parser.get<double>("q");
-    // In the same way, we declare an input parameter 'q'.
-
-    // g = sqrt(q*lambda);
-    // For convenience, we also define g as a function of lambda and q.
-
     /////////
     // Initial homogeneous components of the fields
     // (read from parameters file, or specified here if not)
     /////////
 
     fldS0 = parser.get<double, 1>("initial_amplitudes");
-    piS0 = parser.get<double, 1>("initial_momenta", {0, 0});
+    piS0 = parser.get<double, 1>("initial_momenta", 0);
 
     // Then, we need to specify the initial homogeneous
     // value of our fields. We read them again from the input file. The int '2'
@@ -110,7 +104,6 @@ public:
     // Rescaling for program variables
     /////////
 
-    // For phi_init=0:
     alpha = 1;
     fStar = mu / sqrt(lambda);
     omegaStar = mu;
@@ -158,10 +151,6 @@ public:
     // functions which can be applied to our fields,  see the manual for an
     // exhaustive list and what to do if you want to implement a new one.
   }
-  // auto potentialTerms(Tag<1>) // Interaction energy
-  // {
-  //   return -pow<2>(fldS(0_c));
-  // }
 
   // Advanced note (ignore if you are satisfied with the above) :
   // - The 'auto' return type is important because the object returned is
@@ -188,11 +177,6 @@ public:
     return pow<3>(fldS(0_c)) - fldS(0_c);
   }
 
-  // auto potDeriv(Tag<1>) // Derivative with respect to the daughter field.
-  // {
-  //   return -2.0 * fldS(0_c);
-  // }
-
   /////////
   //  Second derivatives of the program potential with respect fields
   // (add one function for each field)
@@ -205,12 +189,7 @@ public:
   {
     return 3 * pow<2>(fldS(0_c)) - 1.0;
   }
-
-  // auto potDeriv2(Tag<1>) // Second derivative with respect daughter field
-  // {
-  //   return -2.0;
-  // }
 };
 } // namespace TempLat
 
-#endif // LPHI4_H
+#endif // MEXHAT

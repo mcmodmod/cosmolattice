@@ -3,11 +3,11 @@ expansion = true
 evolver = LF
 
 #Output
-outputfile = /home/will/cosmolattice/output/mH1e1/
+outputfile = /home/morten/GoetheUni/DMGW_Project/cosmolattice/output/mH1e4/
 
 #Model Parameters
-lambda = 8.33E-12
-mu = 2.44E+12   
+lambda = 8.333E-10
+mu = 2.435E+10
 
 #Lattice
 N = 64
@@ -17,8 +17,8 @@ kIR = 0.1
 #Times
 tOutputFreq = 1
 tOutputInfreq = 1
-tMax = 200
-baseSeed = 1234
+tMax = 1
+# baseSeed = 1234
 
 #Power spectrum options
 PS_type = 1
@@ -30,6 +30,6 @@ withGWs=true
 
 #IC
 kCutOff = 4
-initial_amplitudes = 0 # homogeneous amplitudes in GeV
+initial_amplitudes = 1e12 # homogeneous amplitudes in GeV
 initial_momenta = 0 # homogeneous amplitudes in GeV2
 

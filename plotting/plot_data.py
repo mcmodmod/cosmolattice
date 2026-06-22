@@ -22,7 +22,7 @@ SAVE = True
 
 def save_figure(fig, path: Path):
     if SAVE:
-        fig.savefig(path, format="pdf")
+        fig.savefig(path, format="pdf", backend="pgf")
     plt.close(fig)
 
 
@@ -130,7 +130,7 @@ def plot_spectra_numerical(save_dir, spectra, n_bins, n_spectra):
         1,
         xlabel=r"$k/\omega_\star$",
         ylabel=r"$\tilde{\Delta}_{\tilde\phi_0}$",
-        ignore=120,
+        ignore=80,
     )
 
     plot_spectrum(
@@ -172,7 +172,7 @@ def plot_spectra_physical(save_dir, spectra, n_bins, n_spectra, omega_star, f_st
         H,
         xlabel=r"$k/H$",
         ylabel=r"$\Delta_{\phi_0}$",
-        ignore=150,
+        ignore=80,
     )
 
     plot_spectrum(
@@ -228,12 +228,13 @@ def plot_gw_energies(save_dir, phiDat, sl=slice(None)):
 
 
 def main():
-    base_dirs = ["mH1e9/"]
+    base_dirs = ["mH1e4/"]
     input_dirs = [Path("../output") / d for d in base_dirs]
     output_dirs = [Path("./figures") / d for d in base_dirs]
 
-    mH = 10**9
-    mus = np.array([M_PL * 10 ** (-i) for i in range(4, 8, 1)])
+    mH = 10**4
+    # mus = np.array([M_PL * 10 ** (-i) for i in range(4, 8, 1)])
+    mus = np.array([2.435e10])
     lams = np.array([lam_from_mu(mu, mH) for mu in mus])
     omega_stars = mus
     f_stars = omega_stars / np.sqrt(lams)
