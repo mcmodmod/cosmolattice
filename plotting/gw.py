@@ -1,67 +1,23 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from pathlib import Path
+from plot_data import load_spectrum, plot_gw_spectrum
+from get_params_from_mH import lam_from_mu
 
 
 def main():
-    plt.style.use("classic")
-    plt.tight_layout()
-    plt.rcParams.update(
-        {
-            "text.usetex": True,
-            "axes.labelsize": 20,
-            "legend.fontsize": 13,
-            "xtick.labelsize": 15,
-            "ytick.labelsize": 15,
-        }
-    )
-    # filename = "../output/lphi4_single/spectra_gws.txt"
-    # filename = "../output/mexhat/spectra_gws.txt"
-    # filename = "./test.txt"
-    filename = f"../output/Veff_N64_eta1e5/spectra_gws.txt"
-    # filename = f"../output/mexhat/test/spectra_gws.txt"
-    print("Using data from", filename, "...")
-    # Load the file, split into blocks separated by blank lines
-    with open(filename) as f:
-        # Read contents and create list of strings of the form:
-        # [
-        # "κ Ω_GW(k, t) #l\n
-        #  κ Ω_GW(k, t) #l\n
-        # ...",
-        # "κ Ω_GW(k, t) #l\n
-        #  κ Ω_GW(k, t) #l\n
-        # ...",
-        # ...
-        # ]
-        content = f.read().strip().split("\n\n")
-        content = content[-100:]
-    cmap = plt.get_cmap("YlOrRd", len(content))
-    plt.figure(figsize=(8, 6))
+    M_PL = 2.435 * 10 ** (18)
+    mH = 10**4
+    mu = 2.435e10
+    lam = lam_from_mu(mu, mH)
+    omega_star = mu
+    f_star = omega_star / np.sqrt(lam)
+    H = mu**2 / (np.sqrt(12) * M_PL * np.sqrt(lam))
 
-    for j, block in enumerate(content):
-        # Use np.loadtxt on each block
-        data = np.loadtxt(block.splitlines())
-        kappa = data[:, 0]
-        omega_gw = data[:, 1]
-        plt.plot(kappa, omega_gw, color=cmap(j), label=f"Time step {j+1}")
-        # savepath = f"./figures/gif/frame{j:0>5}.png"
-        # print("Saving figure to", savepath)
-        # plt.savefig(savepath)
-
-    # plt.ylim(10e-41, 10e-33)
-    # plt.xlim(0.2, 13)
-    plt.xlabel(r"$\kappa=k/\omega_\star$")
-    plt.ylabel(r"$\Omega_\mathrm{GW}(k,t)$")
-    plt.yscale("log")
-    plt.xscale("log")
-    plt.grid()
-    # title = "V=lam phi**4 - mu phi**2, N=64, dt=0.05, kIR=0.2"
-    # plt.title(title)
-
-    # savepath = f"./figures/mexhat_spec_gws_N128_lam1e-{i}.pdf"
-    savepath = "./figures/test.pdf"
-
-    print("Saving figure to", savepath, "...")
-    plt.savefig(savepath)
+    input_file = Path("../output/mH1e4/mH1e4_VV10_256/spectra_gws.txt")
+    out_dir = Path("./figures")
+    spectra, n_bins, n_spec = load_spectrum(input_file)
+    plot_gw_spectrum(out_dir, spectra, n_bins, n_spec, H / omega_star)
 
 
 if __name__ == "__main__":

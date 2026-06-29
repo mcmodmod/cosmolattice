@@ -26,6 +26,19 @@ def save_figure(fig, path: Path):
     plt.close(fig)
 
 
+def plot_scale_factor(save_dir, aDat, sl=slice(None)):
+
+    eta = aDat[sl, 0]
+    a = aDat[sl, 1]
+
+    fig, ax = plt.subplots()
+    ax.plot(eta, a)
+    ax.set_xlabel(r"$\tilde\eta$")
+    ax.set_ylabel(r"$a$")
+
+    save_figure(fig, save_dir / "scale_factor.pdf")
+
+
 def plot_average_field(save_dir, phiDat, sl=slice(None)):
 
     eta = phiDat[sl, 0]
@@ -209,7 +222,7 @@ def plot_gw_spectrum(save_dir, spectra, n_bins, n_spectra, H):
         H,
         xlabel=r"$k/H$",
         ylabel=r"$\Omega_\mathrm{GW}(k,t)$",
-        ignore=20,
+        ignore=100,
         loglog=True,
     )
 
@@ -228,12 +241,11 @@ def plot_gw_energies(save_dir, phiDat, sl=slice(None)):
 
 
 def main():
-    base_dirs = ["mH1e4/"]
+    base_dirs = ["mH1e4/mH1e4_LF_512"]
     input_dirs = [Path("../output") / d for d in base_dirs]
     output_dirs = [Path("./figures") / d for d in base_dirs]
 
     mH = 10**4
-    # mus = np.array([M_PL * 10 ** (-i) for i in range(4, 8, 1)])
     mus = np.array([2.435e10])
     lams = np.array([lam_from_mu(mu, mH) for mu in mus])
     omega_stars = mus
@@ -248,6 +260,7 @@ def main():
         ):
             out.mkdir(parents=True, exist_ok=True)
 
+            plot_scale_factor(out, np.loadtxt(d / "average_scale_factor.txt"))
             plot_average_field(out, np.loadtxt(d / "average_scalar_0.txt"))
             plot_energy_densities(out, np.loadtxt(d / "average_energies.txt"))
 
