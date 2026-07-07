@@ -1,15 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from get_params_from_mH import lam_from_mu
+from m_over_H import lam_from_mu
 from pathlib import Path
+from Veff_Daniel import EffectivePotential
 
 M_PL = 2.435 * 10 ** (18)
-
-
-def T_rh(gBL, mZp, g_star_eps):
-    return (
-        1.4 * 10**4 * g_star_eps ** (-0.25) * gBL ** (1 / 2) * (1e6 / mZp) ** (3 / 2)
-    )  # GeV
 
 
 def main():
@@ -30,12 +25,28 @@ def main():
     base_dir = Path("../output/mH1e4")
     input_dirs = [
         base_dir / dir
-        for dir in ["mH1e4_VV10_64", "mH1e4_LF_128", "mH1e4_VV10_256", "mH1e4_LF_512"]
+        for dir in [
+            # "mH1e4_VV10_64",
+            # "mH1e4_LF_128",
+            # "mH1e4_VV10_256",
+            # "mH1e4_256_kIR1e-2",
+            "mH1e4_LF_512",
+            "mH1e4_512_kIR1e-2",
+            # "mH1e4_LF_1024",
+        ]
+    ]
+    labels = [
+        # r"$N=64$",
+        # r"$N=128$",
+        # r"$N=256$, $k_{\mathrm{IR}}=0.1$",
+        # r"$N=256$, $k_{\mathrm{IR}}=0.01$",
+        r"$N=512$, $k_{\mathrm{IR}}=0.1$",
+        r"$N=512$, $k_{\mathrm{IR}}=0.01$",
+        # r"$N=1024$",
     ]
     filenames = [in_dir / "spectra_gws.txt" for in_dir in input_dirs]
-
     plt.figure(figsize=(8, 6))
-    for file in filenames:
+    for i, file in enumerate(filenames):
         # Load the file, split into blocks separated by blank lines
         with open(file) as f:
             content = f.read().strip().split("\n\n")
@@ -48,25 +59,20 @@ def main():
         omega_star = mu
         f_star = omega_star / np.sqrt(lam)
         H = mu**2 / (np.sqrt(12) * M_PL * np.sqrt(lam))
-
-        g_star = 106.75
-
         kH = data[:, 0] / H * omega_star
-
-        redshift_amplitude_factor = 1.67e-5 * (100 / g_star) ** (1 / 3)
-        omega_gw = data[:, 1]  # * redshift_amplitude_factor
-
-        plt.plot(kH, omega_gw)
+        omega_gw = data[:, 1]
+        plt.plot(kH, omega_gw, label=labels[i])
     plt.xlabel(r"$k/H$")
     plt.ylabel(r"$\Omega_\mathrm{GW}(k,t)$")
     plt.yscale("log")
     plt.xscale("log")
     plt.grid(alpha=0.5)
-    savefile = "./figures/test.pdf"
+    plt.legend()
+    savefile = "./figures/grid_sizes_gw.pdf"
     print(f"Saving figure to {savefile}")
     plt.savefig(savefile, format="pdf", backend="pgf")
-    print("All done!")
 
 
 if __name__ == "__main__":
     main()
+    print("All done!")
