@@ -22,6 +22,7 @@ SAVE = True
 
 def save_figure(fig, path: Path):
     if SAVE:
+        print(f"Saving figure to {path}")
         fig.savefig(path, format="pdf", backend="pgf")
     plt.close(fig)
 
@@ -241,7 +242,7 @@ def plot_gw_energies(save_dir, phiDat, sl=slice(None)):
 
 
 def main():
-    base_dirs = ["mH1e4/mH1e4_LF_512"]
+    base_dirs = ["mH1e4/mH1e4_LF_1024"]
     input_dirs = [Path("../output") / d for d in base_dirs]
     output_dirs = [Path("./figures") / d for d in base_dirs]
 
