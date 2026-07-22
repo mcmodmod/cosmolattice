@@ -1,60 +1,67 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from plot_data import load_spectrum
+from simulation import Simulation
+from load_data import load_gw_spectra
+from plot_data import save_figure
 from pathlib import Path
 
-plt.rcParams.update(
-    {
-        "text.usetex": True,
-        "pgf.texsystem": "pdflatex",
-        "axes.labelsize": 20,
-        "axes.grid": True,
-        "legend.fontsize": 13,
-        "xtick.labelsize": 15,
-        "ytick.labelsize": 15,
-        "figure.constrained_layout.use": True,
-    }
-)
+
+def omega_peaks_best_fit(m_over_H):
+    s = 0.834
+    c = -1.95
+    return c * m_over_H**s
 
 
-def main():
-    base_dirs = [
-        "mH1e2/",
-        "mH1e3/mu11_lam-10/",
-        "mH1e4_old/",
-        "mH1e5/",
-        "mH1e6/",
-        "mH1e7/",
-        "mH1e8/",
-        "mH1e9/",
-    ]
-    input_dirs = [Path("../output") / d for d in base_dirs]
-
-    peaks = np.empty(len(base_dirs))
-    for i, d_in in enumerate(input_dirs):
-        spectra, _, _ = load_spectrum(d_in / "spectra_gws.txt")
-        peaks[i] = np.max(spectra[:, 1])
-    log_peaks = np.log10(peaks)
-    log_mHs = np.array([i for i in range(2, len(base_dirs) + 2)])
-    mHs = 10**log_mHs
-
-    params, covariance = np.polyfit(log_mHs, log_peaks, 1, cov=True)
+def omega_peaks_best_fit_params(m_over_Hs, peaks):
+    params, covariance = np.polyfit(np.log10(m_over_Hs), np.log10(peaks), 1, cov=True)
     s, n = params
     s_err, n_err = np.sqrt(np.diag(covariance))
     c = 10**n
     c_err = c * np.log(10) * n_err
-    print(f"Best-Fit: Omega_GW = c * (m/H)^s")
+    return c, s, c_err, s_err
+
+
+def main():
+    base_dirs = [
+        "mH1e2_512",
+        "mH1e3_512",
+        "mH1e4_512",
+        "mH1e5_512",
+        "mH1e6_512",
+        "mH1e7_512",
+        "mH1e8_512",
+        "mH1e9_512",
+    ]
+    input_dirs = [Path("../output") / d for d in base_dirs]
+    output_dirs = [Path("./figures") / d for d in base_dirs]
+
+    m_over_Hs = np.array([1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9])
+
+    sims = [
+        Simulation(inp, out, m_over_H)
+        for inp, out, m_over_H in zip(input_dirs, output_dirs, m_over_Hs)
+    ]
+
+    peaks = np.empty(len(sims))
+    for i, sim in enumerate(sims):
+        spectra = load_gw_spectra(sim.input_dir / "spectra_gws.txt")
+        # Find maximum value of omega_gw over all time steps:
+        peaks[i] = max(spec["omega_gw"].max() for spec in spectra)
+
+    s, c, s_err, c_err = omega_peaks_best_fit_params(m_over_Hs, peaks)
+    print(f"Best-Fit: h^2 Omega_GW = c * (m/H)^s")
     print(f"s = {s:.3f} +/- {s_err:.3f}")
     print(f"c = {c:.2f} +/- {c_err:.2f}")
-    peaks_fit = c * mHs**s
+    peaks_fit = c * m_over_Hs**s
     fig, ax = plt.subplots()
-    ax.plot(mHs, peaks, linestyle="", marker=".", markersize=8)
-    ax.plot(mHs, peaks_fit, linestyle="-")
+    ax.plot(m_over_Hs, peaks, linestyle="", marker=".", markersize=8)
+    ax.plot(m_over_Hs, peaks_fit, linestyle="-")
     ax.set_yscale("log")
     ax.set_xscale("log")
-    ax.set_ylabel(r"$\Omega_\mathrm{GW}^\mathrm{peak}$")
+    ax.set_ylabel(r"$h^2 \Omega_\mathrm{GW}^\mathrm{peak}$")
     ax.set_xlabel(r"$m/H$")
-    fig.savefig("./figures/peaks_mH.pdf", backend="pgf")
+    ax.tick_params(axis="x", which="minor", bottom=False, top=False)
+    save_figure(fig, Path("./figures/peaks_mH.pdf"))
 
 
 if __name__ == "__main__":

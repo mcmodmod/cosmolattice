@@ -8,6 +8,8 @@ import cmath
 import scipy
 from scipy.optimize import fmin, minimize
 
+# from cosmoTransitions.finiteT import Jb, Jb_spline, Jb_exact
+
 getcontext().prec = 50
 
 
@@ -45,8 +47,17 @@ class EffectivePotential:
         g_star = 106.75 + 3 + 1
         return np.pi**2 / 30 * g_star * T**4
 
+    # def minimize_Veff(self, T):
+    #     return fmin(lambda phi: self.Veff(phi, 1e-50, T), x0=self.v_phi, disp=0)[0]
     def minimize_Veff(self, T):
-        return fmin(lambda phi: self.Veff(phi, 1e-50, T), x0=self.v_phi, disp=0)[0]
+
+        res = minimize(
+            lambda x: self.Veff(x[0], 1e-50, T),
+            x0=[self.v_phi],
+            method="Nelder-Mead",
+        )
+
+        return res.x[0]
 
     def H_init(self, T):
         rho_vac = self.vacuumEnergy(T)
@@ -291,13 +302,16 @@ class EffectivePotential:
             # lamMix = self.inputClass.lamMix_at_mZ
 
         d2V_tree = 3 * lamPhi * phi**2
-        d2V_cw = (
-            3
-            * gBL**4
-            * phi**2
-            / np.pi**2
-            * (3 * np.log(4 * gBL**2 * phi**2 / mu**2) + 1)
-        )
+        if abs(phi) < 1e-12:
+            d2V_cw = 0.0
+        else:
+            d2V_cw = (
+                3
+                * gBL**4
+                * phi**2
+                / np.pi**2
+                * (3 * np.log(4 * gBL**2 * phi**2 / mu**2) + 1)
+            )
         d2V_portal = -lamMix / 2 * h**2
 
         if T != 0:
@@ -541,21 +555,27 @@ class EffectivePotential:
         phi_true = self.minimize_Veff(T=0)
 
         # vacuum energy
-        DeltaV = self.Veff(phi_true, self.vh_qcd, 0)
+        DeltaV = self.Veff(1e-10, self.vh_qcd, 0) - self.Veff(phi_true, self.vh_qcd, 0)
 
         H = np.sqrt(DeltaV / (3 * self.MPl**2))
 
         # curvature at origin
-        m2 = np.sqrt(abs(self.d2Veff(phi=0, h=vh_qcd, T=0)))
+        m_eff = np.sqrt(abs(self.d2Veff(phi=0, h=self.vh_qcd, T=0)))
 
-        return np.sqrt(abs(m2)) / H
+        return m_eff / H
 
 
 if __name__ == "__main__":
-    g = 1e-4
-    mZPrime = 800
     vh_qcd = 0.1
-    veff = EffectivePotential(g, mZPrime, vh_qcd)
-    ratio = veff.m_over_H()
-    veff.interpolate()
-    print(ratio)
+    gBL_vals = np.logspace(-4, 0, 10)
+    mZ_vals = np.logspace(4, 8, 20)
+    ratio_grid = np.zeros((len(gBL_vals), len(mZ_vals)))
+
+    for i, gBL in enumerate(gBL_vals):
+        for j, mZ in enumerate(mZ_vals):
+            print(f"Computing. Indeces: {i=} {j=}")
+            model = EffectivePotential(gBL, mZ, vh_qcd)
+            model.interpolations()
+
+            ratio_grid[i, j] = model.m_over_H()
+    print(ratio_grid)

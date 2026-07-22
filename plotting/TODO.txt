@@ -1,0 +1,7 @@
+Fragen:
+- Sagen wir mal ich will ein GW Spektrum redshiften, damit ich es in sens_curves.pdf eintragen kann, wie würde ich das machen? Ich brauche T_rh das kann ich mit find_T_vac() in Veff_Daniel.py machen, aber dafuer brauche ich genau (gBL, mZp) Paare die dem m/H entsprechen. Woher kriege ich die? Oder vlt nur peak Werte in sens_cruves eintragen? Haengt T_vac nur von m/H ab?
+- Was nehmen wir jetzt als Fit-template? Der Peak ist weg. Ist SNR Analyse noch moeglich? Und wenn ja, wo in compute_SNR_curves.ipynb gehen meine Simulationen ein? Was nehme ich als g_list, m_list?
+- Rerun sims for different (mu,lambda) pairs for a fiduciary m/H and show that there is no dependence. The plotting script for the comparison of gw_spectra in this context is already written (compare_mulam_dependence.py). Ask Daniel which data would be good to compare. gw_energies.pdf?
+- Noch irgendwelche Plots? Kann ich plots von deinen Papers klauen? zb den Contour Plot Fig 3 aus SchmittSagunski2024?
+
+- Struktur der Arbeit? Theorie Kapitel Unterkapitel?
