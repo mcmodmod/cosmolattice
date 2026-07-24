@@ -549,6 +549,9 @@ class EffectivePotential:
             count += 1
         return T_mid
 
+    def mu(self):
+        return np.sqrt(abs(self.d2Veff(phi=0, h=self.vh_qcd, T=0)))
+
     def m_over_H(self):
 
         # true vacuum
@@ -560,9 +563,9 @@ class EffectivePotential:
         H = np.sqrt(DeltaV / (3 * self.MPl**2))
 
         # curvature at origin
-        m_eff = np.sqrt(abs(self.d2Veff(phi=0, h=self.vh_qcd, T=0)))
+        m = np.sqrt(abs(self.d2Veff(phi=0, h=self.vh_qcd, T=0)))
 
-        return m_eff / H
+        return m / H
 
 
 if __name__ == "__main__":

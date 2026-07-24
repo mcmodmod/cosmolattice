@@ -7,7 +7,7 @@ h = 0.67
 GEV_TO_HZ = 2.417989e23
 
 
-def _frequency_from_kappa(kappa, mu):
+def frequency_from_kappa(kappa, mu):
     """
     Convert dimensionless kappa = k / omega_star
     to physical source frequency f_star [Hz].
@@ -124,7 +124,7 @@ def load_gw_spectra(filename):
     Each element corresponds to one simulation time and contains
 
         "kappa"       : dimensionless wave number
-        "omega_gw"       : GW spectrum
+        "omega_gw"    : GW spectrum
     """
 
     blocks = _read_blocks(filename)
@@ -164,7 +164,7 @@ def load_last_gw_spectrum_f(filename, mu):
     Last spectrum as (f_star, Omega_GW).
     """
     kappa, omega = load_last_gw_spectrum(filename)
-    f = _frequency_from_kappa(kappa, mu)
+    f = frequency_from_kappa(kappa, mu)
     return f, omega
 
 
@@ -201,7 +201,7 @@ def load_all_gw_spectra_f(filename, mu):
     """
 
     kappa, omega = load_all_gw_spectra(filename)
-    f = _frequency_from_kappa(kappa, mu)
+    f = frequency_from_kappa(kappa, mu)
 
     return f, omega
 

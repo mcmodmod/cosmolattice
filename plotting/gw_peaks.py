@@ -7,8 +7,8 @@ from pathlib import Path
 
 
 def omega_peaks_best_fit(m_over_H):
-    s = 0.834
-    c = -1.95
+    c = 0.834
+    s = -1.95
     return c * m_over_H**s
 
 
@@ -52,7 +52,8 @@ def main():
     print(f"Best-Fit: h^2 Omega_GW = c * (m/H)^s")
     print(f"s = {s:.3f} +/- {s_err:.3f}")
     print(f"c = {c:.2f} +/- {c_err:.2f}")
-    peaks_fit = c * m_over_Hs**s
+    # peaks_fit = c * m_over_Hs**s
+    peaks_fit = omega_peaks_best_fit(m_over_Hs)
     fig, ax = plt.subplots()
     ax.plot(m_over_Hs, peaks, linestyle="", marker=".", markersize=8)
     ax.plot(m_over_Hs, peaks_fit, linestyle="-")

@@ -221,6 +221,30 @@ def plot_gw_spectra(sim: Simulation):
     save_figure(fig, sim.output_dir / "gw_spectra.pdf")
 
 
+def plot_gw_spectrum_redshifted(sim: Simulation):
+    spectra = load_gw_spectra(sim.input_dir / "spectra_gws.txt")
+    cmap = plt.cm.viridis
+    nsteps = len(spectra)
+    fig, ax = plt.subplots()
+
+    for i, spec in enumerate(spectra):
+        spec["kappa"] = spec["kappa"] * sim.omega_star / sim.H
+        color = cmap(i / max(nsteps - 1, 1))
+        ax.plot(spec["kappa"], spec["omega_gw"], color=color)
+
+    ax.set_xlabel(r"$k/H$")
+    ax.set_ylabel(r"$h^2\Omega_\mathrm{GW}$")
+    ax.set(xscale="log", yscale="log")
+
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=Normalize(vmin=0, vmax=nsteps - 1))
+    sm.set_array([])
+
+    cbar = plt.colorbar(sm, ax=ax)
+    cbar.set_label(r"$\tilde\eta$")
+
+    save_figure(fig, sim.output_dir / "gw_spectra.pdf")
+
+
 def main():
     base_dirs = [
         "mH1e2_512",

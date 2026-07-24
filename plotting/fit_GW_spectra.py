@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.special import expit
 from pathlib import Path
 
 from matplotlib import pyplot as plt
@@ -7,6 +8,7 @@ from scipy.optimize import curve_fit
 from dataclasses import dataclass
 from load_data import load_last_gw_spectrum_f, spectrum_peak
 from plot_data import save_figure
+from simulation import Simulation
 
 M_PL = 2.435e18
 
@@ -18,7 +20,18 @@ class FitResult:
     covariance: np.ndarray
 
 
+def spectrum_best_fit(
+    f, f_peak, omega_peak, sim=Simulation(Path("../output/mH1e3_512"), Path(), 1e3)
+):
+    f_star, omega_gw_star = load_last_gw_spectrum_f(
+        sim.input_dir / "spectra_gws.txt", sim.mu
+    )
+    fit = fit_template_2(f_star, omega_gw_star)
+    return gw_template_2(f, **fit.params, f_peak=f_peak, omega_peak=omega_peak)
+
+
 def gw_template_1(f, n1, n2, delta, f_peak, omega_peak):
+    """From 2306.14856 eq. 2.25"""
     f_tilde = f / f_peak
     return (
         omega_peak
@@ -29,11 +42,20 @@ def gw_template_1(f, n1, n2, delta, f_peak, omega_peak):
 
 def gw_template_2(f, As, fs, gamma, p, f_peak, omega_peak):
     f_tilde = f / f_peak
-    return omega_peak * (
-        As
-        * (f_tilde / fs) ** p
-        / (1 + (f_tilde / fs) ** p * np.exp(gamma * (f_tilde / fs - 1)))
-    )
+    y = (f_tilde / fs) ** p
+    x = gamma * (f_tilde / fs - 1)
+
+    return omega_peak * As * expit(np.log(y) - x)
+
+
+# def gw_template_2(f, As, fs, gamma, p, f_peak, omega_peak):
+#     """From 1912.01007 eq. 7"""
+#     f_tilde = f / f_peak
+#     return omega_peak * (
+#         As
+#         * (f_tilde / fs) ** p
+#         / (1 + (f_tilde / fs) ** p * np.exp(gamma * (f_tilde / fs - 1)))
+#     )
 
 
 def fit_template_1(f_star, omega_gw_star, f_max=1e35) -> FitResult:
@@ -41,6 +63,7 @@ def fit_template_1(f_star, omega_gw_star, f_max=1e35) -> FitResult:
     f_fit = f_star[mask]
     omega_fit = omega_gw_star[mask]
 
+    f_peak, omega_peak = spectrum_peak(f_star, omega_gw_star)
     popt, pcov = curve_fit(
         lambda f, n1, n2, delta: gw_template_1(f, n1, n2, delta, f_peak, omega_peak),
         f_fit,
@@ -62,6 +85,7 @@ def fit_template_2(f_star, omega_gw_star, f_max=1e35) -> FitResult:
     f_fit = f_star[mask]
     omega_fit = omega_gw_star[mask]
 
+    f_peak, omega_peak = spectrum_peak(f_star, omega_gw_star)
     popt, pcov = curve_fit(
         lambda f, As, fs, gamma, p: gw_template_2(
             f, As, fs, gamma, p, f_peak, omega_peak

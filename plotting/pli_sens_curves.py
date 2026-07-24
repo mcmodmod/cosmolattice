@@ -2,7 +2,12 @@ import os
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
+from cycler import cycler
+import matplotlib as mpl
+from Veff_Daniel import EffectivePotential
+from gw_peaks import omega_peaks_best_fit
 from matplotlib.ticker import NullLocator
+from fit_GW_spectra import spectrum_best_fit
 
 plt.rcParams.update(
     {
@@ -19,20 +24,7 @@ plt.rcParams.update(
 )
 
 
-def plot_labels(ax):
-    colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
-    ax.text(7e-10, 5e-12, r"$\mathrm{SKA}$", c=colors[0], fontsize=17, rotation=90)
-    ax.text(5e-5, 1e-10, r"$\mathrm{LISA}$", c=colors[1], fontsize=17, rotation=295)
-    ax.text(
-        1.3e-7, 5e-12, r"$\mu\mathrm{ARES}$", c=colors[2], fontsize=17, rotation=310
-    )
-    ax.text(3e1, 1e-10, r"$\mathrm{DECIGO}$", c=colors[3], fontsize=17, rotation=70)
-    ax.text(2e2, 1e-10, r"$\mathrm{ET}$", c=colors[4], fontsize=17, rotation=60)
-    ax.text(2e0, 3e-11, r"$\mathrm{B-DECIGO}$", c=colors[5], fontsize=17, rotation=60)
-    ax.text(8e0, 4e-11, r"$\mathrm{BBO}$", c=colors[6], fontsize=17, rotation=65)
-
-
-if __name__ == "__main__":
+def plot_compare_sens_curves():
     filenames = [
         "PLISensCurves/" + filename for filename in os.listdir("PLISensCurves")
     ]
@@ -43,27 +35,94 @@ if __name__ == "__main__":
             data = np.array(pickle.load(f))
             freq[file] = data[0, :]
             sens[file] = data[1, :]
-
     fig, ax = plt.subplots()
-    fig.set_size_inches(10, 5)
+    fig.set_size_inches(8, 5)
     ax.set_xscale("log")
     ax.set_yscale("log")
     for file in filenames:
-        print(file)
-        ax.plot(freq[file], sens[file])
-        step = 100
+        ax.plot(freq[file], sens[file], linewidth=1)
         if len(sens[file]) > 1000:
-            step = 10
+            step = 8
         else:
             step = 1
-        ax.fill_between(freq[file][::step], sens[file][::step], 5e-8, alpha=0.1)
+        ax.fill_between(freq[file][::step], sens[file][::step], 1e-6, alpha=0.075)
     plot_labels(ax)
+
     ax.set_xlabel(r"$f_0\,\mathrm{[Hz]}$")
-    ax.set_ylabel(r"$h^2 \Omega_\mathrm{GW}$")
-    ax.set_ylim(1e-18, 5e-8)
+    ax.set_ylabel(r"$h^2 \Omega_{\mathrm{GW}, 0}$")
+    ax.set_ylim(1e-20, 1e-6)
     ax.set_xlim(1e-10, 7e2)
     ax.set_xticks([10**i for i in range(-10, 3, 2)])
     ax.xaxis.set_minor_locator(NullLocator())
     ax.yaxis.set_minor_locator(NullLocator())
-    ax.grid(alpha=0.4)
+    ax.grid(linestyle="--", alpha=0.4)
+    return fig, ax
+
+
+def get_peaks_from_params(gBL, mZp):
+    g_star = 106.75
+    a_star = 1
+
+    veff = EffectivePotential(gBL, mZp, vh_qcd=0.1)
+    veff.interpolations()
+    m_over_H = veff.m_over_H()
+    T_rh = veff.find_T_vac()
+    H_rh = veff.Hubble(T_rh)
+
+    omega_peak = omega_peaks_best_fit(m_over_H)
+    omega_peak_0 = 1.67e-5 * (100 / g_star) ** (1 / 3) * omega_peak
+    k_peak = np.sqrt(abs(veff.d2Veff(phi=0, h=veff.vh_qcd, T=0)))
+    f_peak_0 = 1.65e-7 * 1 / (a_star * H_rh) * T_rh * (g_star / 100) ** (1 / 6) * k_peak
+
+    print(f"{m_over_H=:.1E}")
+    return f_peak_0, omega_peak_0
+
+
+def plot_labels(ax):
+    colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+    ax.text(7e-10, 5e-12, r"$\mathrm{SKA}$", c=colors[0], fontsize=17, rotation=90)
+    ax.text(5e-5, 1e-10, r"$\mathrm{LISA}$", c=colors[1], fontsize=17, rotation=295)
+    ax.text(
+        1.3e-7, 5e-12, r"$\mu\mathrm{ARES}$", c=colors[2], fontsize=17, rotation=310
+    )
+    ax.text(3e1, 1e-10, r"$\mathrm{DECIGO}$", c=colors[3], fontsize=17, rotation=70)
+    ax.text(2e2, 1e-10, r"$\mathrm{ET}$", c=colors[4], fontsize=17, rotation=60)
+    ax.text(2.5e0, 8e-11, r"$\mathrm{B-DECIGO}$", c=colors[5], fontsize=17, rotation=62)
+    ax.text(8e0, 4e-11, r"$\mathrm{BBO}$", c=colors[6], fontsize=17, rotation=65)
+
+
+if __name__ == "__main__":
+    M_PL = 2.435e18
+
+    gBLs = np.array([1e-2])
+    mZps = np.array([1e6, 8e5, 5e5, 2.5e5])
+    labels = [
+        r"$m_{\rm Z'} = 1 \times 10^{6}$",
+        r"$m_{\rm Z'} = 8 \times 10^{6}$",
+        r"$m_{\rm Z'} = 5 \times 10^{5}$",
+        r"$m_{\rm Z'} = 2.5 \times 10^{5}$",
+    ]
+
+    fig, ax = plot_compare_sens_curves()
+    f_range = np.logspace(-10, 2, 1000)
+
+    # Set colormap for GW curves
+    cmap = mpl.colormaps["Greens"]
+    colors = [cmap(x) for x in np.linspace(0.5, 1.0, len(mZps) * len(gBLs))]
+
+    ax.set_prop_cycle(cycler(color=colors))
+    for gBL in gBLs:
+        for i, mZp in enumerate(mZps):
+            f_peak_0, omega_peak_0 = get_peaks_from_params(gBL, mZp)
+            print(f"{f_peak_0=:.2E}, {omega_peak_0=:.2E}")
+
+            mask = f_range > f_peak_0 * (10 ** (-2))
+            ax.plot(
+                f_range[mask],
+                spectrum_best_fit(f_range, f_peak_0, omega_peak_0)[mask],
+                # color="k",
+                linewidth=2,
+                label=labels[i],
+            )
+    ax.legend()
     fig.savefig("figures/sens_curves.pdf", format="pdf", backend="pgf")
