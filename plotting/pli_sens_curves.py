@@ -8,6 +8,7 @@ from Veff_Daniel import EffectivePotential
 from gw_peaks import omega_peaks_best_fit
 from matplotlib.ticker import NullLocator
 from fit_GW_spectra import spectrum_best_fit
+from load_data import frequency_from_kappa
 
 plt.rcParams.update(
     {
@@ -50,7 +51,7 @@ def plot_compare_sens_curves():
 
     ax.set_xlabel(r"$f_0\,\mathrm{[Hz]}$")
     ax.set_ylabel(r"$h^2 \Omega_{\mathrm{GW}, 0}$")
-    ax.set_ylim(1e-20, 1e-6)
+    ax.set_ylim(1e-32, 1e-6)
     ax.set_xlim(1e-10, 7e2)
     ax.set_xticks([10**i for i in range(-10, 3, 2)])
     ax.xaxis.set_minor_locator(NullLocator())
@@ -85,10 +86,10 @@ def plot_labels(ax):
     ax.text(
         1.3e-7, 5e-12, r"$\mu\mathrm{ARES}$", c=colors[2], fontsize=17, rotation=310
     )
-    ax.text(3e1, 1e-10, r"$\mathrm{DECIGO}$", c=colors[3], fontsize=17, rotation=70)
+    # ax.text(3e1, 1e-10, r"$\mathrm{DECIGO}$", c=colors[3], fontsize=17, rotation=70)
     ax.text(2e2, 1e-10, r"$\mathrm{ET}$", c=colors[4], fontsize=17, rotation=60)
-    ax.text(2.5e0, 8e-11, r"$\mathrm{B-DECIGO}$", c=colors[5], fontsize=17, rotation=62)
-    ax.text(8e0, 4e-11, r"$\mathrm{BBO}$", c=colors[6], fontsize=17, rotation=65)
+    # ax.text(2.5e0, 8e-11, r"$\mathrm{B-DECIGO}$", c=colors[5], fontsize=17, rotation=62)
+    # ax.text(8e0, 4e-11, r"$\mathrm{BBO}$", c=colors[6], fontsize=17, rotation=65)
 
 
 if __name__ == "__main__":
@@ -98,16 +99,32 @@ if __name__ == "__main__":
     mZps = np.array([1e6, 8e5, 5e5, 2.5e5])
     labels = [
         r"$m_{\rm Z'} = 1 \times 10^{6}$",
-        r"$m_{\rm Z'} = 8 \times 10^{6}$",
+        r"$m_{\rm Z'} = 8 \times 10^{5}$",
         r"$m_{\rm Z'} = 5 \times 10^{5}$",
         r"$m_{\rm Z'} = 2.5 \times 10^{5}$",
+    ]
+    tamara_filenames = np.array(
+        [
+            "h2OmegaGW_SI_gBL=1.00e-02_mZp=1.00e+06.txt",
+            "h2OmegaGW_SI_gBL=1.00e-02_mZp=8.00e+05.txt",
+            "h2OmegaGW_SI_gBL=1.00e-02_mZp=5.00e+05.txt",
+            "h2OmegaGW_SI_gBL=1.00e-02_mZp=2.50e+05.txt",
+        ]
+    )
+    tamara_data = [
+        np.loadtxt(
+            "./spectra_tamara/" + file,
+            skiprows=1,
+            unpack=True,
+        )
+        for file in tamara_filenames
     ]
 
     fig, ax = plot_compare_sens_curves()
     f_range = np.logspace(-10, 2, 1000)
 
     # Set colormap for GW curves
-    cmap = mpl.colormaps["Greens"]
+    cmap = mpl.colormaps["Blues"]
     colors = [cmap(x) for x in np.linspace(0.5, 1.0, len(mZps) * len(gBLs))]
 
     ax.set_prop_cycle(cycler(color=colors))
@@ -120,9 +137,11 @@ if __name__ == "__main__":
             ax.plot(
                 f_range[mask],
                 spectrum_best_fit(f_range, f_peak_0, omega_peak_0)[mask],
-                # color="k",
                 linewidth=2,
                 label=labels[i],
             )
+    for file in tamara_data:
+        _, f, omega_gw = file
+        ax.plot(f, omega_gw)
     ax.legend()
     fig.savefig("figures/sens_curves.pdf", format="pdf", backend="pgf")
