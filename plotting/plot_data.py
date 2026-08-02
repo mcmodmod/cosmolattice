@@ -15,10 +15,17 @@ from load_data import (
 plt.rcParams.update(
     {
         "text.usetex": True,
+        "font.family": "serif",
+        "pgf.preamble": r"""
+        \usepackage[lining,semibold,scaled=1.05]{ebgaramond}
+        \usepackage{amsmath}
+        \usepackage[vvarbb,subscriptcorrection]{newtxmath}
+    """,
         "pgf.texsystem": "pdflatex",
         "axes.labelsize": 20,
         "legend.fontsize": 13,
         "axes.grid": True,
+        "grid.alpha": 0.2,
         "xtick.labelsize": 15,
         "ytick.labelsize": 15,
         "xtick.direction": "in",
