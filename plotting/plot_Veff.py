@@ -15,6 +15,7 @@ def main():
 
     v_phi = mZp / (2.0 * gBL)
     T_c = veff.find_Tc()
+    print(T_c)
 
     phis = np.linspace(1.0e-5, 1.25 * v_phi, 1600)
     x = phis / v_phi

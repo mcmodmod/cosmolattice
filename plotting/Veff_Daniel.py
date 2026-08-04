@@ -209,14 +209,13 @@ class EffectivePotential:
 
         mZSq = 4 * gBL**2 * phi**2
         Pi_Z = 4 * gBL**2 * T**2
-        # if T != 0:
-        #     V_T = self.V_T(mZSq, T)
-        #     V_daisy = -T / (12 * np.pi) * ((mZSq + Pi_Z) ** (3 / 2) - mZSq ** (3 / 2))
-        #
-        #     return V_tree + V_cw + V_portal + V_T + V_daisy
-        # else:
-        #     return V_tree + V_cw + V_portal
-        return V_tree + V_cw + V_portal
+        if T != 0:
+            V_T = self.V_T(mZSq, T)
+            V_daisy = -T / (12 * np.pi) * ((mZSq + Pi_Z) ** (3 / 2) - mZSq ** (3 / 2))
+
+            return V_tree + V_cw + V_portal + V_T + V_daisy
+        else:
+            return V_tree + V_cw + V_portal
 
     def Veff(self, phi, h, T):
         return float(self.Veff_decimal(phi, h, T))
@@ -567,15 +566,8 @@ class EffectivePotential:
 
 if __name__ == "__main__":
     vh_qcd = 0.1
-    gBL_vals = np.logspace(-4, 0, 10)
-    mZ_vals = np.logspace(4, 8, 20)
-    ratio_grid = np.zeros((len(gBL_vals), len(mZ_vals)))
-
-    for i, gBL in enumerate(gBL_vals):
-        for j, mZ in enumerate(mZ_vals):
-            print(f"Computing. Indeces: {i=} {j=}")
-            model = EffectivePotential(gBL, mZ, vh_qcd)
-            model.interpolations()
-
-            ratio_grid[i, j] = model.m_over_H()
-    print(ratio_grid)
+    gBL = 1e-2
+    mZp = 1e4
+    veff = EffectivePotential(gBL, mZp, vh_qcd)
+    veff.interpolations()
+    print(veff.find_T_vac())
