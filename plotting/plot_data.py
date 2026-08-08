@@ -5,6 +5,7 @@ from pathlib import Path
 from simulation import Simulation
 from load_data import (
     load_average_field,
+    load_field_rms,
     load_energy_densities,
     load_scale_factor,
     load_scalar_spectra,
@@ -66,9 +67,23 @@ def plot_average_field(sim, sl=slice(None)):
     fig, ax = plt.subplots()
     ax.plot(eta, phi)
     ax.set_xlabel(r"$\tilde\eta$")
-    ax.set_ylabel(r"$\langle\tilde\phi\rangle$")
+    ax.set_ylabel(r"$\langle\tilde\varphi\rangle$")
 
     save_figure(fig, sim.output_dir / "average_field.pdf")
+
+
+def plot_rms(sim, sl=slice(None)):
+
+    eta, phi = load_field_rms(sim.input_dir / "average_scalar_0.txt")
+    eta = eta[sl]
+    rms = phi[sl]
+
+    fig, ax = plt.subplots()
+    ax.plot(eta, rms)
+    ax.set_xlabel(r"$\tilde\eta$")
+    ax.set_ylabel(r"$\mathrm{rms}\left(\tilde\varphi\right)$")
+
+    save_figure(fig, sim.output_dir / "field_rms.pdf")
 
 
 def plot_energy_densities(sim, sl=slice(None)):
@@ -121,8 +136,8 @@ def plot_spectra_num(sim: Simulation, quantity: str):
     cmap = plt.cm.viridis
     nsteps = len(spectra)
     labels = {
-        "field": r"$\tilde\Delta_{\tilde\phi}$",
-        "derivative": r"$\tilde\Delta_{\tilde\phi'}$",
+        "field": r"$\tilde\Delta_{\tilde\varphi}$",
+        "derivative": r"$\tilde\Delta_{\tilde\varphi'}$",
         "occupation": r"$\tilde n_{\tilde k}$",
     }
     fig, ax = plt.subplots()
@@ -163,8 +178,8 @@ def plot_spectra_phys(sim: Simulation, quantity: str):
     cmap = plt.cm.viridis
     nsteps = len(spectra)
     labels = {
-        "field": r"$\Delta_{\phi}$",
-        "derivative": r"$\Delta_{\phi'}$",
+        "field": r"$\Delta_{\varphi}$",
+        "derivative": r"$\Delta_{\varphi'}$",
         "occupation": r"$\tilde n_{\tilde k}$",
     }
     fig, ax = plt.subplots()
@@ -281,6 +296,7 @@ def main():
 
             plot_scale_factor(sim)
             plot_average_field(sim)
+            plot_rms(sim)
             plot_energy_densities(sim)
 
             plot_spectra_num(sim, "field")

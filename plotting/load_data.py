@@ -62,6 +62,13 @@ def load_average_field(filename):
     return eta, phi
 
 
+def load_field_rms(filename):
+    data = np.loadtxt(filename)
+    eta = data[:, 0]
+    rms = data[:, 5]
+    return eta, rms
+
+
 def load_energy_densities(filename):
     data = np.loadtxt(filename)
     eta = data[:, 0]
