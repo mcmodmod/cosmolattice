@@ -27,6 +27,7 @@ class Simulation:
         self.omega_star = self.mu
         self.f_star = self.mu / np.sqrt(self.lam)
         self.H = self.mu**2 / (np.sqrt(12) * M_PL * np.sqrt(self.lam))
+        self.vev = self.mu / np.sqrt(self.lam)
 
 
 if __name__ == "__main__":
