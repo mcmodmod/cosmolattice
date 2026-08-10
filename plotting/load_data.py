@@ -69,6 +69,15 @@ def load_field_rms(filename):
     return eta, rms
 
 
+def load_field_variance(filename):
+    data = np.loadtxt(filename)
+    eta = data[:, 0]
+    phi = data[:, 1]
+    mean_square = data[:, 3]
+    variance = mean_square - phi**2
+    return eta, variance
+
+
 def load_energy_densities(filename):
     data = np.loadtxt(filename)
     eta = data[:, 0]

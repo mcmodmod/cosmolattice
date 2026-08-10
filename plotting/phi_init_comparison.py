@@ -9,6 +9,7 @@ from plot_data import save_figure
 def main():
 
     base_dirs = [
+        "mH1e3_phi_init_0",
         "mH1e3_phi_init_e8",
         "mH1e3_phi_init_e9",
         "mH1e3_phi_init_e10",
@@ -19,8 +20,9 @@ def main():
         Simulation(input_dir, Path("./figures"), m_over_H) for input_dir in input_dirs
     ]
     vev = sims[0].vev
-    phi_init = [vev * 10**i for i in [-7, -6, -5]]
+    phi_init = [0] + [vev * 10**i for i in [-7, -6, -5]]
     labels = [
+        r"$\overline\varphi_\mathrm{i}=0$",
         r"$\overline\varphi_\mathrm{i}=v_\mathrm{sim}\times 10^{-7}$",
         r"$\overline\varphi_\mathrm{i}=v_\mathrm{sim}\times 10^{-6}$",
         r"$\overline\varphi_\mathrm{i}=v_\mathrm{sim}\times 10^{-5}$",
@@ -31,19 +33,19 @@ def main():
         spectra = load_gw_spectra(sim.input_dir / "spectra_gws.txt")
         # Find maximum value of omega_gw over all time steps:
         peaks[i] = max(spec["omega_gw"].max() for spec in spectra)
-    dOmega = np.abs(peaks[0] - peaks[1]) / peaks[-1] * 100  # %
+    dOmega = np.abs(peaks[0] - peaks[1]) / peaks[0] * 100  # %
     print(f"{dOmega=:.2f} %")
     fig, ax = plt.subplots()
     ax.plot(phi_init / vev, peaks, linestyle="", marker=".", markersize=12)
     ax.plot(
-        phi_init[0] / vev,
-        peaks[0],
+        phi_init[1] / vev,
+        peaks[1],
         linestyle="",
         marker="*",
         color="red",
         markersize=12,
     )
-    ax.set_xscale("log")
+    # ax.set_xscale("log")
     ax.set_ylabel(r"$h^2 \Omega_\mathrm{GW}^\mathrm{peak}$")
     ax.set_xlabel(r"$\overline\varphi_\mathrm{i}/v_\mathrm{sim}$")
     # ax.tick_params(axis="x", which="minor", bottom=True, top=True)
