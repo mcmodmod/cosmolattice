@@ -8,15 +8,22 @@ from plot_data import save_figure
 
 def main():
 
-    base_dirs = ["mH1e3_dt3e-3", "mH1e3_dt5e-3", "mH1e3_dt1e-2", "mH1e3_dt2e-2"]
+    base_dirs = [
+        "mH1e3_dt1e-3",
+        # "mH1e3_dt3e-3",
+        "mH1e3_dt5e-3",
+        "mH1e3_dt1e-2",
+        "mH1e3_dt2e-2",
+    ]
     input_dirs = [Path("../output/time_step_comparison") / d for d in base_dirs]
     m_over_H = 1e3
     sims = [
         Simulation(input_dir, Path("./figures"), m_over_H) for input_dir in input_dirs
     ]
-    dts = [3e-3, 5e-3, 1e-2, 2e-2]
+    dts = [1e-3, 5e-3, 1e-2, 2e-2]
     labels = [
-        r"$\delta \tilde \eta=0.003$",
+        r"$\delta \tilde \eta=0.001$",
+        # r"$\delta \tilde \eta=0.003$",
         r"$\delta \tilde \eta=0.005$",
         r"$\delta \tilde \eta=0.01$",
         r"$\delta \tilde \eta=0.02$",
@@ -27,8 +34,8 @@ def main():
         spectra = load_gw_spectra(sim.input_dir / "spectra_gws.txt")
         # Find maximum value of omega_gw over all time steps:
         peaks[i] = max(spec["omega_gw"].max() for spec in spectra)
-    # dOmega = np.abs(peaks[-1] - peaks[-2]) / peaks[-1] * 100  # %
-    # print(f"{dOmega=:.2f} %")
+    dOmega = np.abs(peaks[1] - peaks[0]) / peaks[0] * 100  # %
+    print(f"{dOmega=:.3f} %")
     fig, ax = plt.subplots()
     ax.plot(dts, peaks, linestyle="", marker=".", markersize=12)
     ax.plot(dts[1], peaks[1], linestyle="", marker="*", color="red", markersize=12)

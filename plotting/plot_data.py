@@ -273,8 +273,12 @@ def main():
     base_dirs = [
         # "mH1e2_512",
         # "phi_init_comparison/mH1e3_phi_init_0",
+        "kCutOff_comparison/mH1e3_kCutOff_0",
+        "kCutOff_comparison/mH1e3_kCutOff_2",
+        "kCutOff_comparison/mH1e3_kCutOff_4",
+        "kCutOff_comparison/mH1e3_kCutOff_8",
         # "mH1e3_512",
-        "mH1e3_512_new",
+        # "mH1e3_512_new",
         # "mH1e4_512",
         # "mH1e5_512",
         # "mH1e6_512",
@@ -286,7 +290,7 @@ def main():
     output_dirs = [Path("./figures") / d for d in base_dirs]
 
     # m_over_Hs = np.array([1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9])
-    m_over_Hs = np.array([1e3, 1e3])
+    m_over_Hs = np.array([1e3, 1e3, 1e3, 1e3])
 
     sims = [
         Simulation(inp, out, m_over_H)
