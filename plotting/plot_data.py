@@ -272,8 +272,9 @@ def plot_gw_spectrum_redshifted(sim: Simulation):
 def main():
     base_dirs = [
         # "mH1e2_512",
-        "phi_init_comparison/mH1e3_phi_init_0",
-        "mH1e3_512",
+        # "phi_init_comparison/mH1e3_phi_init_0",
+        # "mH1e3_512",
+        "mH1e3_512_new",
         # "mH1e4_512",
         # "mH1e5_512",
         # "mH1e6_512",
