@@ -8,7 +8,7 @@ import numpy as np
 if __name__ == "__main__":
     base_dirs = [
         "mH1e3_mu10_lam-12/",
-        "mH1e3_mu11_lam-10/",
+        # "mH1e3_mu11_lam-10/",
         "mH1e3_mu12_lam-8/",
         "mH1e3_mu13_lam-6/",
         "mH1e3_mu14_lam-4/",
@@ -20,13 +20,13 @@ if __name__ == "__main__":
     ]
     labels = [
         r"$\mu=2.435\times 10^{10}$",
-        r"$\mu=2.435\times 10^{11}$",
+        # r"$\mu=2.435\times 10^{11}$",
         r"$\mu=2.435\times 10^{12}$",
         r"$\mu=2.435\times 10^{13}$",
         r"$\mu=2.435\times 10^{14}$",
     ]
 
-    mus = [2.435e10, 2.435e11, 2.435e12, 2.435e13, 2.435e14]
+    mus = [2.435e10, 2.435e12, 2.435e13, 2.435e14]
     peaks = np.empty(len(sims))
     for i, sim in enumerate(sims):
         spectra = load_gw_spectra(sim.input_dir / "spectra_gws.txt")
