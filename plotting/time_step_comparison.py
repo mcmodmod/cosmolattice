@@ -38,7 +38,7 @@ def main():
     print(f"{dOmega=:.3f} %")
     fig, ax = plt.subplots()
     ax.plot(dts, peaks, linestyle="", marker=".", markersize=12)
-    ax.plot(dts[1], peaks[1], linestyle="", marker="*", color="red", markersize=12)
+    ax.plot(dts[2], peaks[2], linestyle="", marker="*", color="red", markersize=12)
     ax.set_ylabel(r"$h^2 \Omega_\mathrm{GW}^\mathrm{peak}$")
     ax.set_xlabel(r"$\delta \tilde \eta$")
     # ax.tick_params(axis="x", which="minor", bottom=True, top=True)

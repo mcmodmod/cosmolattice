@@ -23,7 +23,7 @@ def lam_from_mu(mu, mH):
 
 
 def main():
-    mHs = np.array([10 ** (i) for i in range(1, 10)])
+    # mHs = np.array([10 ** (i) for i in range(1, 10)])
     mHs = np.array([1e3])
     vevs = mu_over_sqrtlam_from_mH(mHs)
     mus = np.array([M_PL * 10 ** (-i) for i in range(5, 12, 1)])

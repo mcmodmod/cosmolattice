@@ -9,22 +9,30 @@ from plot_data import save_figure
 def main():
 
     base_dirs = [
-        "mH1e3_kCutOff_0",
         "mH1e3_kCutOff_2",
-        # "mH1e3_kCutOff_4",
+        "mH1e3_kCutOff_4",
         "mH1e3_kCutOff_8",
+        "mH1e3_kCutOff_10",
+        "mH1e3_kCutOff_15",
+        "mH1e3_kCutOff_20",
+        "mH1e3_kCutOff_30",
+        "mH1e3_kCutOff_50",
     ]
     input_dirs = [Path("../output/kCutOff_comparison") / d for d in base_dirs]
     m_over_H = 1e3
     sims = [
         Simulation(input_dir, Path("./figures"), m_over_H) for input_dir in input_dirs
     ]
-    kCutOffs = [14, 2, 8]
+    kCutOffs = [2, 4, 8, 10, 15, 20, 30, 50]
     labels = [
-        r"$\mathtt{kCutOff=inf}$",
         r"$\mathtt{kCutOff=2}$",
-        # r"$\mathtt{kCutOff=4}$",
+        r"$\mathtt{kCutOff=4}$",
         r"$\mathtt{kCutOff=8}$",
+        r"$\mathtt{kCutOff=10}$",
+        r"$\mathtt{kCutOff=15}$",
+        r"$\mathtt{kCutOff=20}$",
+        r"$\mathtt{kCutOff=30}$",
+        r"$\mathtt{kCutOff=50}$",
     ]
 
     peaks = np.empty(len(sims))
@@ -33,10 +41,10 @@ def main():
         # Find maximum value of omega_gw over all time steps:
         peaks[i] = max(spec["omega_gw"].max() for spec in spectra)
     dOmega = np.abs(peaks[0] - peaks[2]) / peaks[0] * 100  # %
-    print(f"{dOmega=:.5f} %")
+    print(f"{dOmega=:.4f} %")
     fig, ax = plt.subplots()
     ax.plot(kCutOffs, peaks, linestyle="", marker=".", markersize=12)
-    ax.plot(kCutOffs[2], peaks[2], linestyle="", marker="*", color="red", markersize=12)
+    # ax.plot(kCutOffs[2], peaks[2], linestyle="", marker="*", color="red", markersize=12)
     ax.set_ylabel(r"$h^2 \Omega_\mathrm{GW}^\mathrm{peak}$")
     ax.set_xlabel(r"$k_\mathrm{cut}/\mu$")
     # ax.tick_params(axis="x", which="minor", bottom=True, top=True)
