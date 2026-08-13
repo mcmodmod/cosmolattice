@@ -1,39 +1,38 @@
 import h5py
 import matplotlib.pyplot as plt
+from plot_data import save_figure
+from pathlib import Path
 
-filename = "../output/mexhat_DATE_d22_m6_y2026_TIME_h18_m52_s33.h5"
+filenames = [
+    Path("../output/mH1e3/") / file
+    for file in [
+        "mexhat_DATE_d13_m8_y2026_TIME_h24_m51_s23.h5",
+        "mexhat_DATE_d13_m8_y2026_TIME_h24_m58_s32.h5",
+        "mexhat_DATE_d14_m8_y2026_TIME_h1_m7_s37.h5",
+        "mexhat_DATE_d14_m8_y2026_TIME_h1_m16_s19.h5",
+        "mexhat_DATE_d14_m8_y2026_TIME_h1_m31_s9.h5",
+    ]
+]
 
-with h5py.File(filename, "r") as f:
-    field = f["scalar_0(x)"][:]
+for i, filename in enumerate(filenames):
+    # Read the 3D scalar field
+    with h5py.File(filename, "r") as f:
+        scalar = f["scalar_0(x)"][:]
 
-nx, ny, nz = field.shape
+    # Take a slice through the middle of the volume
+    middle = scalar.shape[0] // 2
+    slice_2d = scalar[middle, :, :]
 
-# Central slice
-slice2d = field[:, :, nz // 2]
+    # Create figure and axes
+    fig, ax = plt.subplots()
 
-# Coordinates
-extent = [0, nx, 0, ny]
+    # Plot the slice
+    im = ax.imshow(slice_2d, origin="lower", cmap="viridis")
 
-fig, ax = plt.subplots(figsize=(6, 5))
+    # Add colorbar
+    fig.colorbar(im, ax=ax, label="Scalar field value")
 
-im = ax.imshow(
-    slice2d.T,  # transpose so x is horizontal
-    origin="lower",
-    extent=extent,
-    cmap="viridis",  # change if desired
-    aspect="equal",
-)
-
-cbar = plt.colorbar(im, ax=ax, pad=0.02)
-cbar.set_label(r"$\phi$")
-
-ax.set_xlabel(r"$x$")
-ax.set_ylabel(r"$y$")
-ax.set_title(r"$z=L/2$")
-
-plt.tight_layout()
-
-# plt.savefig("scalar_slice.pdf", bbox_inches="tight")
-# plt.savefig("scalar_slice.png", dpi=400, bbox_inches="tight")
-
-plt.show()
+    # Labels and title
+    ax.set_xlabel(r"$y$")
+    ax.set_xlabel(r"$z$")
+    save_figure(fig, Path(f"./figures/hdf5_{i}.pdf"))
