@@ -10,9 +10,10 @@ def main():
 
     base_dirs = [
         "mH1e3_phi_init_0",
+        "mH1e3_phi_init_e6",
+        "mH1e3_phi_init_e7",
         "mH1e3_phi_init_e8",
         "mH1e3_phi_init_e9",
-        "mH1e3_phi_init_e10",
     ]
     input_dirs = [Path("../output/phi_init_comparison") / d for d in base_dirs]
     m_over_H = 1e3
@@ -20,12 +21,13 @@ def main():
         Simulation(input_dir, Path("./figures"), m_over_H) for input_dir in input_dirs
     ]
     vev = sims[0].vev
-    phi_init = [0] + [vev * 10**i for i in [-7, -6, -5]]
+    phi_init = [0] + [vev * 10**i for i in [-9, -8, -7, -6]]
     labels = [
         r"$\overline\varphi_\mathrm{i}=0$",
+        r"$\overline\varphi_\mathrm{i}=v_\mathrm{sim}\times 10^{-9}$",
+        r"$\overline\varphi_\mathrm{i}=v_\mathrm{sim}\times 10^{-8}$",
         r"$\overline\varphi_\mathrm{i}=v_\mathrm{sim}\times 10^{-7}$",
         r"$\overline\varphi_\mathrm{i}=v_\mathrm{sim}\times 10^{-6}$",
-        r"$\overline\varphi_\mathrm{i}=v_\mathrm{sim}\times 10^{-5}$",
     ]
 
     peaks = np.empty(len(sims))
@@ -37,18 +39,11 @@ def main():
     print(f"{dOmega=:.2f} %")
     fig, ax = plt.subplots()
     ax.plot(phi_init / vev, peaks, linestyle="", marker=".", markersize=12)
-    ax.plot(
-        phi_init[1] / vev,
-        peaks[1],
-        linestyle="",
-        marker="*",
-        color="red",
-        markersize=12,
-    )
-    # ax.set_xscale("log")
+    ax.hlines([peaks[0]], xmin=1e-10, xmax=1e-5, linestyle="--", color="red")
+    ax.set_xscale("log")
     ax.set_ylabel(r"$h^2 \Omega_\mathrm{GW}^\mathrm{peak}$")
     ax.set_xlabel(r"$\overline\varphi_\mathrm{i}/v_\mathrm{sim}$")
-    # ax.tick_params(axis="x", which="minor", bottom=True, top=True)
+    ax.set_xlim(7e-10, 2e-6)
     save_figure(fig, Path("./figures/phi_init_comparison.pdf"))
 
     fig, ax = plt.subplots()

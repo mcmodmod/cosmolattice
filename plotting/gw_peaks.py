@@ -60,7 +60,7 @@ def main():
     ax.set_yscale("log")
     ax.set_xscale("log")
     ax.set_ylabel(r"$h^2 \Omega_\mathrm{GW}^\mathrm{peak}$")
-    ax.set_xlabel(r"$m/H$")
+    ax.set_xlabel(r"$\mu/H$")
     ax.tick_params(axis="x", which="minor", bottom=False, top=False)
     save_figure(fig, Path("./figures/peaks_mH.pdf"))
 

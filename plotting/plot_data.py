@@ -271,15 +271,15 @@ def plot_gw_spectrum_redshifted(sim: Simulation):
 
 def main():
     base_dirs = [
-        # "mH1e2_512",
-        # "phi_init_comparison/mH1e3_phi_init_0",
-        "mulam_dependence/mH1e3_mu10_lam-12/",
-        "mulam_dependence/mH1e3_mu11_lam-10/",
-        "mulam_dependence/mH1e3_mu12_lam-8/",
-        "mulam_dependence/mH1e3_mu13_lam-6/",
-        "mulam_dependence/mH1e3_mu14_lam-4/",
+        "mH1e2_512_new",
+        # # "phi_init_comparison/mH1e3_phi_init_0",
+        # "mulam_dependence/mH1e3_mu10_lam-12/",
+        # "mulam_dependence/mH1e3_mu11_lam-10/",
+        # "mulam_dependence/mH1e3_mu12_lam-8/",
+        # "mulam_dependence/mH1e3_mu13_lam-6/",
+        # "mulam_dependence/mH1e3_mu14_lam-4/",
         # "mH1e3_512",
-        # "mH1e3_512_new",
+        "mH1e3_512_new",
         # "mH1e4_512",
         # "mH1e5_512",
         # "mH1e6_512",
@@ -291,7 +291,7 @@ def main():
     output_dirs = [Path("./figures") / d for d in base_dirs]
 
     # m_over_Hs = np.array([1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9])
-    m_over_Hs = [1e3] * len(base_dirs)
+    m_over_Hs = [1e2, 1e3]
 
     sims = [
         Simulation(inp, out, m_over_H)

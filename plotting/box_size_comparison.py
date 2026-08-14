@@ -9,6 +9,7 @@ from plot_data import save_figure
 def main():
 
     base_dirs = [
+        # "mH1e3_N32_kIR16e-1",
         "mH1e3_N64_kIR8e-1",
         "mH1e3_N128_kIR4e-1",
         "mH1e3_N256_kIR2e-1",
@@ -23,7 +24,9 @@ def main():
     # Ns = [64, 128, 256, 512]
     kIRs = [8e-1, 4e-1, 2e-1, 1e-1]
     Ls = [2 * np.pi / (kIR) for kIR in kIRs]
+    print(Ls)
     labels = [
+        # r"$L=3.2\times 10^{-11}$",
         r"$L=3.2\times 10^{-11}$",
         r"$L=6.5\times 10^{-11}$",
         r"$L=1.3\times 10^{-10}$",

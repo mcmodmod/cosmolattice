@@ -45,13 +45,13 @@ def main():
                 max_kappa = spec["kappa"][idx]
 
         peaks[i] = max_omega
-        f_peaks[i] = frequency_from_kappa(max_kappa, sim.mu)
+        f_peaks[i] = frequency_from_kappa(max_kappa, sim.mu) / sim.mu
 
     fig, ax = plt.subplots()
-    ax.plot(m_over_Hs, f_peaks, linestyle="", marker=".", markersize=8)
+    ax.plot(m_over_Hs[1:], f_peaks[1:], linestyle="", marker=".", markersize=8)
     ax.set_xscale("log")
     ax.set_yscale("log")
-    ax.set_xlabel(r"$m/H$")
+    ax.set_xlabel(r"$\mu/H$")
     ax.set_ylabel(r"$f_{\rm peak}$")
     ax.tick_params(axis="x", which="minor", bottom=False, top=False)
     save_figure(fig, Path("./figures/f_peaks.pdf"))

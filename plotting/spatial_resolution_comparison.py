@@ -9,29 +9,28 @@ from plot_data import save_figure
 def main():
 
     base_dirs = [
-        "mH1e4_VV10_64",
-        "mH1e4_LF_128",
-        "mH1e4_VV10_256",
-        "mH1e4_LF_512",
-        "mH1e4_LF_1024",
+        "mH1e3_N64",
+        "mH1e3_N128",
+        "mH1e3_N256",
+        "mH1e3_N512",
     ]
     input_dirs = [
         Path("../output/spatial_resolution_comparison") / d for d in base_dirs
     ]
-    m_over_H = 1e4
+    m_over_H = 1e3
     sims = [
         Simulation(input_dir, Path("./figures"), m_over_H) for input_dir in input_dirs
     ]
-    mu = sims[0].mu
     labels = [
         r"$\delta \tilde x=0.98$",
         r"$\delta \tilde x=0.49$",
         r"$\delta \tilde x=0.25$",
         r"$\delta \tilde x=0.12$",
-        r"$\delta \tilde x=0.06$",
+        # r"$\delta \tilde x=0.06$",
     ]
-    Ns = [64, 128, 256, 512, 1024]
+    Ns = [64, 128, 256, 512]
     dx = np.array([2 * np.pi / (N * 0.1) for N in Ns])
+    print(dx)
     peaks = np.empty(len(sims))
     for i, sim in enumerate(sims):
         spectra = load_gw_spectra(sim.input_dir / "spectra_gws.txt")

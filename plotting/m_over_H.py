@@ -24,9 +24,9 @@ def lam_from_mu(mu, mH):
 
 def main():
     # mHs = np.array([10 ** (i) for i in range(1, 10)])
-    mHs = np.array([1e3])
+    mHs = np.array([1e9])
     vevs = mu_over_sqrtlam_from_mH(mHs)
-    mus = np.array([M_PL * 10 ** (-i) for i in range(5, 12, 1)])
+    mus = np.array([M_PL * 10 ** (-i) for i in range(5, 15, 1)])
 
     for mH, vev in zip(mHs, vevs):
         lams = np.array([lam_from_mu(mu, mH) for mu in mus])
