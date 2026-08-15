@@ -9,10 +9,10 @@ from plot_data import save_figure
 def main():
 
     base_dirs = [
-        "mH1e3_dt1e-3",
-        # "mH1e3_dt3e-3",
+        # "mH1e3_dt1e-3",
         "mH1e3_dt5e-3",
         "mH1e3_dt1e-2",
+        "mH1e3_dt15e-3",
         "mH1e3_dt2e-2",
     ]
     input_dirs = [Path("../output/time_step_comparison") / d for d in base_dirs]
@@ -20,12 +20,12 @@ def main():
     sims = [
         Simulation(input_dir, Path("./figures"), m_over_H) for input_dir in input_dirs
     ]
-    dts = [1e-3, 5e-3, 1e-2, 2e-2]
+    dts = [5e-3, 1e-2, 15e-3, 2e-2]
     labels = [
-        r"$\delta \tilde \eta=0.001$",
-        # r"$\delta \tilde \eta=0.003$",
+        # r"$\delta \tilde \eta=0.001$",
         r"$\delta \tilde \eta=0.005$",
         r"$\delta \tilde \eta=0.01$",
+        r"$\delta \tilde \eta=0.015$",
         r"$\delta \tilde \eta=0.02$",
     ]
 
@@ -38,7 +38,7 @@ def main():
     print(f"{dOmega=:.3f} %")
     fig, ax = plt.subplots()
     ax.plot(dts, peaks, linestyle="", marker=".", markersize=12)
-    ax.plot(dts[2], peaks[2], linestyle="", marker="*", color="red", markersize=12)
+    ax.plot(dts[1], peaks[1], linestyle="", marker="*", color="red", markersize=12)
     ax.set_ylabel(r"$h^2 \Omega_\mathrm{GW}^\mathrm{peak}$")
     ax.set_xlabel(r"$\delta \tilde \eta$")
     # ax.tick_params(axis="x", which="minor", bottom=True, top=True)

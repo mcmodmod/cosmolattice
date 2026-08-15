@@ -272,26 +272,19 @@ def plot_gw_spectrum_redshifted(sim: Simulation):
 def main():
     base_dirs = [
         "mH1e2_512_new",
-        # # "phi_init_comparison/mH1e3_phi_init_0",
-        # "mulam_dependence/mH1e3_mu10_lam-12/",
-        # "mulam_dependence/mH1e3_mu11_lam-10/",
-        # "mulam_dependence/mH1e3_mu12_lam-8/",
-        # "mulam_dependence/mH1e3_mu13_lam-6/",
-        # "mulam_dependence/mH1e3_mu14_lam-4/",
-        # "mH1e3_512",
-        "mH1e3_512_new",
-        # "mH1e4_512",
-        # "mH1e5_512",
-        # "mH1e6_512",
-        # "mH1e7_512",
-        # "mH1e8_512",
-        # "mH1e9_512",
+        # "mH1e3_512_new",
+        # "mH1e4_512_new",
+        # "mH1e5_512_new",
+        # "mH1e6_512_new",
+        # "mH1e7_512_new",
+        # "mH1e8_512_new",
+        "mH1e9_512_new",
     ]
     input_dirs = [Path("../output") / d for d in base_dirs]
     output_dirs = [Path("./figures") / d for d in base_dirs]
 
     # m_over_Hs = np.array([1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9])
-    m_over_Hs = [1e2, 1e3]
+    m_over_Hs = np.array([1e2, 1e9])
 
     sims = [
         Simulation(inp, out, m_over_H)
@@ -304,11 +297,11 @@ def main():
         for sim in sims:
             sim.output_dir.mkdir(parents=True, exist_ok=True)
 
-            plot_scale_factor(sim)
-            plot_average_field(sim)
-            plot_energy_densities(sim)
-
-            plot_spectra_num(sim, "field")
+            # plot_scale_factor(sim)
+            # plot_average_field(sim)
+            # plot_energy_densities(sim)
+            #
+            # plot_spectra_num(sim, "field")
             # plot_spectra_num(sim, "derivative")
             # plot_spectra_num(sim, "occupation")
 
@@ -317,7 +310,7 @@ def main():
             # plot_spectra_phys(sim, "occupation")
 
             plot_gw_spectra(sim)
-            plot_gw_energies(sim)
+            # plot_gw_energies(sim)
 
 
 if __name__ == "__main__":

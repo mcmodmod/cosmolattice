@@ -8,14 +8,14 @@ from pathlib import Path
 
 def main():
     base_dirs = [
-        "mH1e2_512",
-        "mH1e3_512",
-        "mH1e4_512",
-        "mH1e5_512",
-        "mH1e6_512",
-        "mH1e7_512",
-        "mH1e8_512",
-        "mH1e9_512",
+        "mH1e2_512_new",
+        "mH1e3_512_new",
+        "mH1e4_512_new",
+        "mH1e5_512_new",
+        "mH1e6_512_new",
+        "mH1e7_512_new",
+        "mH1e8_512_new",
+        "mH1e9_512_new",
     ]
     input_dirs = [Path("../output") / d for d in base_dirs]
     output_dirs = [Path("./figures") / d for d in base_dirs]
@@ -48,11 +48,11 @@ def main():
         f_peaks[i] = frequency_from_kappa(max_kappa, sim.mu) / sim.mu
 
     fig, ax = plt.subplots()
-    ax.plot(m_over_Hs[1:], f_peaks[1:], linestyle="", marker=".", markersize=8)
+    ax.plot(m_over_Hs[1:-2], f_peaks[1:-2], linestyle="", marker=".", markersize=8)
     ax.set_xscale("log")
-    ax.set_yscale("log")
+    # ax.set_yscale("log")
     ax.set_xlabel(r"$\mu/H$")
-    ax.set_ylabel(r"$f_{\rm peak}$")
+    ax.set_ylabel(r"$f_{\rm peak}/\mu$")
     ax.tick_params(axis="x", which="minor", bottom=False, top=False)
     save_figure(fig, Path("./figures/f_peaks.pdf"))
 

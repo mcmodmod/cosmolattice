@@ -105,7 +105,12 @@ def fit_template_2(f_star, omega_gw_star, f_max=1e35) -> FitResult:
 
 
 def plot_results(
-    f_star, omega_gw_star, fit1: FitResult, fit2: FitResult, output_file: Path
+    f_star,
+    omega_gw_star,
+    fit1: FitResult,
+    fit2: FitResult,
+    output_file: Path,
+    f_max=1e35,
 ):
     fig, ax = plt.subplots()
 
@@ -118,13 +123,23 @@ def plot_results(
         label="Data",
     )
 
+    mask = f_star < f_max
     ax.plot(
-        f_star,
-        gw_template_1(f_star, **fit1.params, f_peak=f_peak, omega_peak=omega_peak),
-        linewidth=2,
-        color="k",
-        label="Fit template 1",
+        f_star[mask],
+        omega_gw_star[mask],
+        linestyle="",
+        marker=".",
+        color="blue",
+        label="Data used for fit",
     )
+
+    # ax.plot(
+    #     f_star,
+    #     gw_template_1(f_star, **fit1.params, f_peak=f_peak, omega_peak=omega_peak),
+    #     linewidth=2,
+    #     color="k",
+    #     label="Fit template 1",
+    # )
 
     ax.plot(
         f_star,
@@ -136,7 +151,8 @@ def plot_results(
 
     ax.vlines(
         [f_peak],
-        np.min(omega_gw_star),
+        # np.min(omega_gw_star),
+        1e-15,
         omega_peak,
         linestyle="--",
         label=r"$f_\star^\mathrm{peak}$",
@@ -147,23 +163,25 @@ def plot_results(
         xlabel=r"$f_\star [\mathrm{Hz}]$",
         ylabel=r"$h^2\Omega_{\mathrm{GW}, \star}$",
     )
+    ax.set_ylim(1e-15, 1e-5)
 
     ax.legend()
     save_figure(fig, output_file)
 
 
 if __name__ == "__main__":
-    base_dir = Path("mH1e3_512")
+    base_dir = Path("mH1e3_512_new")
     input_file = Path("../output") / base_dir / "spectra_gws.txt"
     output_file = Path("./figures") / base_dir / "gw_spectrum_fit.pdf"
 
     mu = M_PL * 1e-7
+    f_max = 1.2e35
 
     f_star, omega_gw_star = load_last_gw_spectrum_f(input_file, mu)
     f_peak, omega_peak = spectrum_peak(f_star, omega_gw_star)
-    fit1 = fit_template_1(f_star, omega_gw_star)
-    fit2 = fit_template_2(f_star, omega_gw_star)
-    plot_results(f_star, omega_gw_star, fit1, fit2, output_file)
+    fit1 = fit_template_1(f_star, omega_gw_star, f_max)
+    fit2 = fit_template_2(f_star, omega_gw_star, f_max)
+    plot_results(f_star, omega_gw_star, fit1, fit2, output_file, f_max)
 
     print("Peak values:")
     print(f"f_peak = {f_peak:.3e}")

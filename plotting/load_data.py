@@ -249,7 +249,7 @@ def spectrum_peak(x, omega):
     omega_peak
     """
 
-    idx = np.argmax(omega[1:]) + 1  # skip first point
+    idx = np.argmax(omega[2:]) + 2  # skip first point
 
     return x[idx], omega[idx]
 

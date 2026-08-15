@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
 from simulation import Simulation
-from load_data import load_gw_spectra
+from load_data import load_gw_spectra, load_scale_factor
 from plot_data import save_figure
 
 
@@ -24,13 +24,11 @@ def main():
     # Ns = [64, 128, 256, 512]
     kIRs = [8e-1, 4e-1, 2e-1, 1e-1]
     Ls = [2 * np.pi / (kIR) for kIR in kIRs]
-    print(Ls)
     labels = [
-        # r"$L=3.2\times 10^{-11}$",
-        r"$L=3.2\times 10^{-11}$",
-        r"$L=6.5\times 10^{-11}$",
-        r"$L=1.3\times 10^{-10}$",
-        r"$L=2.6\times 10^{-10}$",
+        r"$\tilde L=7.85$",
+        r"$\tilde L=15.7$",
+        r"$\tilde L=31.4$",
+        r"$\tilde L=62.8$",
     ]
 
     peaks = np.empty(len(sims))
@@ -51,14 +49,15 @@ def main():
     fig, ax = plt.subplots()
     for i, sim in enumerate(sims):
         # Last time step:
+        _, a = load_scale_factor(sim.input_dir / "average_scale_factor.txt")
         spectrum = load_gw_spectra(sim.input_dir / "spectra_gws.txt")[-1]
-        kappa = spectrum["kappa"]  # * sim.omega_star / sim.H
+        kappa = spectrum["kappa"] / a[-1]  # * sim.omega_star / sim.H
         ax.plot(
             kappa,
             spectrum["omega_gw"],
             label=labels[i],
         )
-    ax.set(xlabel=r"$\tilde k$", ylabel=r"$h^2\Omega_\mathrm{GW}$")
+    ax.set(xlabel=r"$k_\mathrm{phys}/\mu$", ylabel=r"$h^2\Omega_\mathrm{GW}$")
     ax.set(xscale="log", yscale="log")
     ax.legend()
     savefile = Path("./figures/box_size_comparison_spectra.pdf")

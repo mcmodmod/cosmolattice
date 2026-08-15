@@ -23,14 +23,14 @@ def omega_peaks_best_fit_params(m_over_Hs, peaks):
 
 def main():
     base_dirs = [
-        "mH1e2_512",
-        "mH1e3_512",
-        "mH1e4_512",
-        "mH1e5_512",
-        "mH1e6_512",
-        "mH1e7_512",
-        "mH1e8_512",
-        "mH1e9_512",
+        "mH1e2_512_new",
+        "mH1e3_512_new",
+        "mH1e4_512_new",
+        "mH1e5_512_new",
+        "mH1e6_512_new",
+        "mH1e7_512_new",
+        "mH1e8_512_new",
+        "mH1e9_512_new",
     ]
     input_dirs = [Path("../output") / d for d in base_dirs]
     output_dirs = [Path("./figures") / d for d in base_dirs]
@@ -46,9 +46,10 @@ def main():
     for i, sim in enumerate(sims):
         spectra = load_gw_spectra(sim.input_dir / "spectra_gws.txt")
         # Find maximum value of omega_gw over all time steps:
-        peaks[i] = max(spec["omega_gw"].max() for spec in spectra)
+        peaks[i] = max(spec["omega_gw"][:150].max() for spec in spectra)
+        # print([len(spec["omega_gw"]) for spec in spectra])
 
-    s, c, s_err, c_err = omega_peaks_best_fit_params(m_over_Hs, peaks)
+    c, s, c_err, s_err = omega_peaks_best_fit_params(m_over_Hs, peaks)
     print(f"Best-Fit: h^2 Omega_GW = c * (m/H)^s")
     print(f"s = {s:.3f} +/- {s_err:.3f}")
     print(f"c = {c:.2f} +/- {c_err:.2f}")
