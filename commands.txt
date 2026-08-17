@@ -12,8 +12,24 @@ rm CMakeCache.txt && cmake -DMPI=ON -DPFFT=ON -DMODEL=mexhat -DCMAKE_EXPORT_COMP
 Sometimes needed extra flag with custom FFTW3 and PFFT installation paths, e.g.:
 -DCMAKE_PREFIX_PATH="/home/will/cosmolattice/dependencies/MyFFTW3;/home/will/cosmolattice/dependencies/MyPFFT"
 
-On home-PC:
-rm CMakeCache.txt && cmake -DMPI=ON -DPFFT=ON -DMODEL=mexhat -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_PREFIX_PATH="/home/morten/GoetheUni/DMGW_Project/cosmolattice/dependencies/MyFFTW3;/home/morten/GoetheUni/DMGW_Project/cosmolattice/dependencies/MyPFFT" -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ../ && make cosmolattice
+With HDF5 on home PC:
+
+rm -rf CMakeCache.txt
+
+cmake \
+  -DMPI=ON \
+  -DPFFT=ON \
+  -DHDF5=ON \
+  -DMODEL=mexhat \
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+  -DHDF5_ROOT=/home/morten/GoetheUni/DMGW_Project/cosmolattice/dependencies/MyHDF5 \
+  -DCMAKE_PREFIX_PATH="/home/morten/GoetheUni/DMGW_Project/cosmolattice/dependencies/MyFFTW3;/home/morten/GoetheUni/DMGW_Project/cosmolattice/dependencies/MyPFFT;/home/morten/GoetheUni/DMGW_Project/cosmolattice/dependencies/MyHDF5" \
+  -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+  ../
+
+make cosmolattice
+
+
 
 Run commands:
 
@@ -23,5 +39,8 @@ Run commands:
 2.) Paralellisation in one direction:
 mpirun -n ... mexhat input=../src/models/parameter-files/mexhat.in
 
-2.) Paralellisation in two directions:
+3.) Paralellisation in two directions:
 mpirun -n ... mexhat input=../src/models/parameter-files/mexhat.in
+
+4.) Parallel & HDF5:
+mpirun -n ... mexhat input=../src/models/parameter-files/mexhat.in save_dir=...
