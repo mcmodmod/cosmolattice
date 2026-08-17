@@ -27,15 +27,14 @@ def main():
         Simulation(input_dir, Path("./figures"), m_over_H) for input_dir in input_dirs
     ]
     labels = [
-        r"$\delta \tilde x=0.98$",
-        r"$\delta \tilde x=0.49$",
-        r"$\delta \tilde x=0.25$",
-        r"$\delta \tilde x=0.12$",
+        r"$\delta \tilde x\simeq 0.98$",
+        r"$\delta \tilde x\simeq 0.49$",
+        r"$\delta \tilde x\simeq 0.25$",
+        r"$\delta \tilde x\simeq 0.12$",
         # r"$\delta \tilde x=0.06$",
     ]
     Ns = [64, 128, 256, 512]
     dx = np.array([2 * np.pi / (N * 0.1) for N in Ns])
-    print(dx)
     peaks = np.empty(len(sims))
     for i, sim in enumerate(sims):
         spectra = load_gw_spectra(sim.input_dir / "spectra_gws.txt")
@@ -49,11 +48,12 @@ def main():
     dOmega = np.abs(peaks[-1] - peaks[-2]) / peaks[-1] * 100  # %
     print(f"{dOmega=:.2f} %")
     fig, ax = plt.subplots()
-    ax.plot(dx, peaks, linestyle="", marker=".", markersize=12)
-    ax.plot(dx[3], peaks[3], linestyle="", marker="*", color="red", markersize=12)
+    ax.plot(dx, peaks, linestyle="--", color="grey")
+    for x, p in zip(dx, peaks):
+        ax.plot(x, p, marker=".", markersize=20)
     ax.invert_xaxis()
-    ax.set_ylabel(r"$h^2 \Omega_\mathrm{GW}^\mathrm{peak}$")
-    ax.set_xlabel(r"$\delta \tilde x$")
+    ax.set_ylabel(r"$h^2 \Omega_\mathrm{GW}^\mathrm{peak}$", fontsize=24)
+    ax.set_xlabel(r"$\delta \tilde x$", fontsize=24)
     save_figure(fig, Path("./figures/spatial_resolution_comparison.pdf"))
 
     fig, ax = plt.subplots()
@@ -66,10 +66,12 @@ def main():
             kappa,
             spectrum["omega_gw"],
             label=labels[i],
+            linewidth=2,
         )
-    ax.set(xlabel=r"$k_\mathrm{phys}/\mu$", ylabel=r"$h^2\Omega_\mathrm{GW}$")
+    ax.set_xlabel(r"$k_\mathrm{phys}/\mu$", fontsize=24)
+    ax.set_ylabel(r"$h^2\Omega_\mathrm{GW}$", fontsize=24)
     ax.set(xscale="log", yscale="log")
-    ax.legend(frameon=False)
+    ax.legend(frameon=False, fontsize=19)
     savefile = Path("./figures/spatial_resolution_comparison_spectra.pdf")
     save_figure(fig, savefile)
 

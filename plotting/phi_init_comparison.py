@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
 from simulation import Simulation
-from load_data import load_gw_spectra
+from load_data import load_gw_spectra, load_scale_factor
 from plot_data import save_figure
 
 
@@ -21,7 +21,7 @@ def main():
         Simulation(input_dir, Path("./figures"), m_over_H) for input_dir in input_dirs
     ]
     vev = sims[0].vev
-    phi_init = [0] + [vev * 10**i for i in [-9, -8, -7, -6]]
+    phi_init = [0] + [vev * 10**i for i in [-12, -9, -8, -7, -6]]
     labels = [
         r"$\overline\varphi_\mathrm{i}=0$",
         r"$\overline\varphi_\mathrm{i}=v_\mathrm{sim}\times 10^{-9}$",
@@ -35,7 +35,7 @@ def main():
         spectra = load_gw_spectra(sim.input_dir / "spectra_gws.txt")
         # Find maximum value of omega_gw over all time steps:
         peaks[i] = max(spec["omega_gw"].max() for spec in spectra)
-    dOmega = np.abs(peaks[0] - peaks[1]) / peaks[0] * 100  # %
+    dOmega = np.abs(peaks[0] - peaks[2]) / peaks[2] * 100  # %
     print(f"{dOmega=:.2f} %")
     fig, ax = plt.subplots()
     ax.plot(phi_init / vev, peaks, linestyle="", marker=".", markersize=12)
@@ -49,16 +49,17 @@ def main():
     fig, ax = plt.subplots()
     for i, sim in enumerate(sims):
         # Last time step:
+        _, a = load_scale_factor(sim.input_dir / "average_scale_factor.txt")
         spectrum = load_gw_spectra(sim.input_dir / "spectra_gws.txt")[-1]
-        kappa = spectrum["kappa"]  # * sim.omega_star / sim.H
+        kappa = spectrum["kappa"] / a[-1]  # * sim.omega_star / sim.H
         ax.plot(
             kappa,
             spectrum["omega_gw"],
             label=labels[i],
         )
-    ax.set(xlabel=r"$\tilde k$", ylabel=r"$h^2\Omega_\mathrm{GW}$")
+    ax.set(xlabel=r"$k_\mathrm{phys}/a$", ylabel=r"$h^2\Omega_\mathrm{GW}$")
     ax.set(xscale="log", yscale="log")
-    ax.legend()
+    ax.legend(frameon=False)
     savefile = Path("./figures/phi_init_comparison_spectra.pdf")
     save_figure(fig, savefile)
 

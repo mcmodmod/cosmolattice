@@ -37,10 +37,13 @@ def main():
     dOmega = np.abs(peaks[1] - peaks[0]) / peaks[0] * 100  # %
     print(f"{dOmega=:.3f} %")
     fig, ax = plt.subplots()
-    ax.plot(dts, peaks, linestyle="", marker=".", markersize=12)
-    ax.plot(dts[1], peaks[1], linestyle="", marker="*", color="red", markersize=12)
+    ax.plot(dts, peaks, linestyle="--", color="grey")
+    ax.plot(dts, peaks, linestyle="", marker=".", markersize=16)
+    # ax.plot(dts[1], peaks[1], linestyle="", marker="*", color="red", markersize=12)
     ax.set_ylabel(r"$h^2 \Omega_\mathrm{GW}^\mathrm{peak}$")
     ax.set_xlabel(r"$\delta \tilde \eta$")
+    ax.set_xticks([0.005, 0.01, 0.015, 0.02])
+    ax.invert_xaxis()
     # ax.tick_params(axis="x", which="minor", bottom=True, top=True)
     save_figure(fig, Path("./figures/time_step_comparison.pdf"))
 

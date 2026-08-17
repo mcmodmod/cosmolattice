@@ -40,7 +40,7 @@ def main():
         spectra = load_gw_spectra(sim.input_dir / "spectra_gws.txt")
         # Find maximum value of omega_gw over all time steps:
         peaks[i] = max(spec["omega_gw"].max() for spec in spectra)
-    dOmega = np.abs(peaks[0] - peaks[2]) / peaks[0] * 100  # %
+    dOmega = np.abs(peaks[-1] - peaks[2]) / peaks[-1] * 100  # %
     print(f"{dOmega=:.4f} %")
     fig, ax = plt.subplots()
     ax.plot(kCutOffs, peaks, linestyle="", marker=".", markersize=12)

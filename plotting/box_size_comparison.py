@@ -11,7 +11,7 @@ def main():
     base_dirs = [
         # "mH1e3_N32_kIR16e-1",
         "mH1e3_N64_kIR8e-1",
-        "mH1e3_N128_kIR4e-1",
+        # "mH1e3_N128_kIR4e-1",
         "mH1e3_N256_kIR2e-1",
         "mH1e3_N512_kIR1e-1",
     ]
@@ -22,13 +22,15 @@ def main():
     ]
     # dx = [2 * np.pi / (N * kIR) for kIR, N in zip(kIRs, Ns)]
     # Ns = [64, 128, 256, 512]
-    kIRs = [8e-1, 4e-1, 2e-1, 1e-1]
+    kIRs = [8e-1, 2e-1, 1e-1]
     Ls = [2 * np.pi / (kIR) for kIR in kIRs]
+    for L in Ls:
+        print(L / np.pi)
     labels = [
-        r"$\tilde L=7.85$",
-        r"$\tilde L=15.7$",
-        r"$\tilde L=31.4$",
-        r"$\tilde L=62.8$",
+        r"$\tilde L=2.5 \pi$",
+        # r"$\tilde L=5 \pi$",
+        r"$\tilde L=10 \pi$",
+        r"$\tilde L=20 \pi$",
     ]
 
     peaks = np.empty(len(sims))
@@ -39,10 +41,11 @@ def main():
     dOmega = np.abs(peaks[-1] - peaks[-2]) / peaks[-1] * 100  # %
     print(f"{dOmega=:.2f} %")
     fig, ax = plt.subplots()
-    ax.plot(Ls, peaks, linestyle="", marker=".", markersize=12)
-    ax.plot(Ls[-1], peaks[-1], linestyle="", marker="*", color="red", markersize=12)
-    ax.set_ylabel(r"$h^2 \Omega_\mathrm{GW}^\mathrm{peak}$")
-    ax.set_xlabel(r"$\tilde L$")
+    ax.plot(Ls, peaks, linestyle="--", color="grey")
+    for L, p in zip(Ls, peaks):
+        ax.plot(L, p, linestyle="", marker=".", markersize=20)
+    ax.set_ylabel(r"$h^2 \Omega_\mathrm{GW}^\mathrm{peak}$", fontsize=24)
+    ax.set_xlabel(r"$\tilde L$", fontsize=24)
     # ax.tick_params(axis="x", which="minor", bottom=True, top=True)
     save_figure(fig, Path("./figures/box_size_comparison.pdf"))
 
@@ -56,10 +59,12 @@ def main():
             kappa,
             spectrum["omega_gw"],
             label=labels[i],
+            linewidth=2,
         )
-    ax.set(xlabel=r"$k_\mathrm{phys}/\mu$", ylabel=r"$h^2\Omega_\mathrm{GW}$")
+    ax.set_xlabel(r"$k_\mathrm{phys}/\mu$", fontsize=24)
+    ax.set_ylabel(r"$h^2\Omega_\mathrm{GW}$", fontsize=24)
     ax.set(xscale="log", yscale="log")
-    ax.legend()
+    ax.legend(frameon=False, fontsize=19)
     savefile = Path("./figures/box_size_comparison_spectra.pdf")
     save_figure(fig, savefile)
 

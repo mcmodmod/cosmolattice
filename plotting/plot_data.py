@@ -228,11 +228,11 @@ def plot_gw_spectra(sim: Simulation):
     fig, ax = plt.subplots()
 
     for i, spec in enumerate(spectra):
-        spec["kappa"] = spec["kappa"] / a[i]
+        spec["kappa"] = spec["kappa"] * sim.omega_star / (a[i] * sim.H)
         color = cmap(i / max(nsteps - 1, 1))
         ax.plot(spec["kappa"], spec["omega_gw"], color=color)
 
-    ax.set_xlabel(r"$k_\mathrm{phys}/\mu$")
+    ax.set_xlabel(r"$k_\mathrm{phys}/H$")
     ax.set_ylabel(r"$h^2\Omega_\mathrm{GW}$")
     ax.set(xscale="log", yscale="log")
 
@@ -271,20 +271,20 @@ def plot_gw_spectrum_redshifted(sim: Simulation):
 
 def main():
     base_dirs = [
-        "mH1e2_512_new",
+        "mH1e2_512_new_2",
         # "mH1e3_512_new",
         # "mH1e4_512_new",
         # "mH1e5_512_new",
         # "mH1e6_512_new",
         # "mH1e7_512_new",
         # "mH1e8_512_new",
-        "mH1e9_512_new",
+        # "mH1e9_512_new",
     ]
     input_dirs = [Path("../output") / d for d in base_dirs]
     output_dirs = [Path("./figures") / d for d in base_dirs]
 
     # m_over_Hs = np.array([1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9])
-    m_over_Hs = np.array([1e2, 1e9])
+    m_over_Hs = np.array([1e2, 1e3, 1e9])
 
     sims = [
         Simulation(inp, out, m_over_H)
@@ -297,11 +297,11 @@ def main():
         for sim in sims:
             sim.output_dir.mkdir(parents=True, exist_ok=True)
 
-            # plot_scale_factor(sim)
-            # plot_average_field(sim)
-            # plot_energy_densities(sim)
-            #
-            # plot_spectra_num(sim, "field")
+            plot_scale_factor(sim)
+            plot_average_field(sim)
+            plot_energy_densities(sim)
+
+            plot_spectra_num(sim, "field")
             # plot_spectra_num(sim, "derivative")
             # plot_spectra_num(sim, "occupation")
 
@@ -310,7 +310,7 @@ def main():
             # plot_spectra_phys(sim, "occupation")
 
             plot_gw_spectra(sim)
-            # plot_gw_energies(sim)
+            plot_gw_energies(sim)
 
 
 if __name__ == "__main__":
