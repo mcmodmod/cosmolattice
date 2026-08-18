@@ -20,12 +20,12 @@ def plot_average_field_with_sqrtvariance(sim, sl=slice(None)):
     ax.plot(
         mu_eta,
         np.abs(phi),
-        label=r"$\left|\langle\tilde\varphi\rangle\right|/v_{\mathrm{sim}}$",
+        label=r"$\left|\langle\varphi\rangle\right|/v_{\mathrm{sim}}$",
     )
     ax.plot(
         mu_eta,
         np.sqrt(var),
-        label=r"$\sqrt{\langle\varphi^2\rangle - \langle\varphi\rangle^2}/v_{\mathrm{sim}}$",
+        label=r"$\sigma_\varphi/v_{\mathrm{sim}}$",
     )
     # ax.set(yscale="log")
     ax.set_xlabel(r"$\tilde \eta$")
@@ -36,8 +36,8 @@ def plot_average_field_with_sqrtvariance(sim, sl=slice(None)):
 
 
 def main():
-    input_dir = Path("../output/phi_init_comparison/mH1e3_phi_init_0")
-    output_dir = Path("./figures/phi_init_comparison/mH1e3_phi_init_0")
+    input_dir = Path("../output/mH1e3_512_new")
+    output_dir = Path("./figures/mH1e3_512_new")
 
     m_over_H = 1e3
 
