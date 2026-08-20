@@ -158,6 +158,22 @@ def load_gw_spectra(filename):
     return spectra
 
 
+def load_single_gw_spectrum(filename, index):
+    """
+    Last spectrum.
+
+    Returns
+    -------
+    kappa
+    h^2 Omega_GW
+    """
+    data = _read_blocks(filename)[index]
+    kappa = data[:, 0]
+    omega = h**2 * data[:, 1]
+
+    return kappa, omega
+
+
 def load_last_gw_spectrum(filename):
     """
     Last spectrum.
@@ -167,8 +183,7 @@ def load_last_gw_spectrum(filename):
     kappa
     h^2 Omega_GW
     """
-    data = _last_block(filename)
-
+    data = _read_blocks(filename)[-1]
     kappa = data[:, 0]
     omega = h**2 * data[:, 1]
 
@@ -249,7 +264,7 @@ def spectrum_peak(x, omega):
     omega_peak
     """
 
-    idx = np.argmax(omega[2:]) + 2  # skip first point
+    idx = np.argmax(omega[1:150]) + 1  # skip first point
 
     return x[idx], omega[idx]
 

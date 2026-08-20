@@ -203,7 +203,7 @@ def plot_results(
         omega_gw_star,
         linestyle="",
         marker=".",
-        color="grey",
+        color="lightgrey",
         label="Data",
     )
 
@@ -213,6 +213,7 @@ def plot_results(
         omega_gw_star[mask],
         linestyle="",
         marker=".",
+        markersize=10,
         color="blue",
         label="Data used for fit",
     )
@@ -248,15 +249,48 @@ def plot_results(
         xlabel=r"$k_\mathrm{phys}/\mu$",
         ylabel=r"$h^2\Omega_{\mathrm{GW}}$",
     )
-    # ax.set_ylim(1e-10, 1e-5)
+    ax.set_ylim(np.min(omega_gw_star), np.max(omega_gw_star) * 5)
 
     ax.legend(frameon=False)
     save_figure(fig, output_file)
 
 
+def plot_residuals(k_star, omega_gw_star, fit, output_file, k_max):
+    fig, ax = plt.subplots()
+
+    mask = k_star < k_max
+    best_fit = gw_template_2(
+        k_star[mask], fs=1, **fit2.params, k_peak=k_peak, omega_peak=omega_peak
+    )
+    ax.plot(
+        k_star[mask],
+        np.abs(omega_gw_star[mask] - best_fit) / best_fit,
+        linestyle="",
+        marker=".",
+        label="Data used for fit",
+    )
+
+    ax.set(xscale="log", yscale="log")
+    # ax.set(
+    #     xlabel=r"$k_\mathrm{phys}/\mu$",
+    #     ylabel=r"$h^2\Omega_{\mathrm{GW}}$",
+    # )
+    # ax.set_ylim(1e-10, 1e-5)
+
+    # ax.legend(frameon=False)
+    save_figure(fig, output_file)
+
+
 if __name__ == "__main__":
-    base_dirs = [Path("mH1e3_512_new"), Path("mH1e8_512_new")]
-    m_over_Hs = [1e3, 1e8]
+    base_dirs = [
+        Path("mH1e3_512_new"),
+        Path("mH1e4_512_new"),
+        Path("mH1e5_512_new"),
+        Path("mH1e6_512_new"),
+        Path("mH1e7_512_new"),
+        Path("mH1e8_512_new"),
+    ]
+    m_over_Hs = [1e3, 1e4, 1e5, 1e6, 1e7, 1e8]
     sims = [
         Simulation(Path("../output") / base_dir, Path("./figures") / base_dir, m_over_H)
         for base_dir, m_over_H in zip(base_dirs, m_over_Hs)
@@ -273,6 +307,9 @@ if __name__ == "__main__":
         k_peak, omega_peak = spectrum_peak(k_star, omega_gw_star)
         fit2 = fit_template_2(k_star[1:], omega_gw_star[1:], k_max)
         plot_results(k_star, omega_gw_star, fit2, output_file, k_max)
+        plot_residuals(
+            k_star, omega_gw_star, fit2, sim.output_dir / "fit_residuals_gw.pdf", k_max
+        )
 
         print("Peak values:")
         print(f"k_peak = {k_peak:.3e}")
