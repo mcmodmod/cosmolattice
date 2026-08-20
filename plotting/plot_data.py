@@ -111,13 +111,20 @@ def plot_energy_densities(sim, sl=slice(None)):
 
 def plot_gw_energies(sim):
     eta, rho_frac, rho_GW = load_gw_energies(sim.input_dir / "energy_gws.txt")
-    # _, a = load_scale_factor(sim.input_dir / "average_scale_factor.txt")
+    _, a = load_scale_factor(sim.input_dir / "average_scale_factor.txt")
 
+    sl = slice(120, 150)
+    avg_rhoGW = np.mean(a[sl] ** 4 * rho_GW[sl])
+    for e in eta:
+        e = int(e)
+        Delta_GW = np.abs(a[e] ** 4 * rho_GW[e] - avg_rhoGW) / avg_rhoGW
+        if Delta_GW < 0.02:
+            print(e, Delta_GW)
     fig, ax = plt.subplots()
-    ax.plot(eta, rho_frac)
-    ax.set(yscale="log")
+    ax.plot(eta, rho_GW * a**4)
+    # ax.set(yscale="log")
     ax.set_xlabel(r"$\tilde\eta$")
-    ax.set_ylabel(r"$\rho_\mathrm{GW}/\rho_\mathrm{tot}$")
+    ax.set_ylabel(r"$a^4\rho_{\mathrm{GW}}$")
 
     save_figure(fig, sim.output_dir / "gw_energies.pdf")
 
@@ -221,20 +228,22 @@ def plot_gw_spectra(sim: Simulation):
     ----------
     sim : Simulation
     """
-    spectra = load_gw_spectra(sim.input_dir / "spectra_gws.txt")
+    spectra = [load_gw_spectra(sim.input_dir / "spectra_gws.txt")[40]]
     _, a = load_scale_factor(sim.input_dir / "average_scale_factor.txt")
     cmap = plt.cm.viridis
     nsteps = len(spectra)
     fig, ax = plt.subplots()
 
     for i, spec in enumerate(spectra):
-        spec["kappa"] = spec["kappa"] * sim.omega_star / (a[i] * sim.H)
+        spec["kappa"] = spec["kappa"] / (a[40])
         color = cmap(i / max(nsteps - 1, 1))
         ax.plot(spec["kappa"], spec["omega_gw"], color=color)
-
-    ax.set_xlabel(r"$k_\mathrm{phys}/H$")
+    print(a[20])
+    # ax.vlines([1.4 / a[20]], ymin=1e-22, ymax=1e-6)
+    ax.set_xlabel(r"$k_\mathrm{phys}/\mu$")
     ax.set_ylabel(r"$h^2\Omega_\mathrm{GW}$")
-    ax.set(xscale="log", yscale="log")
+    # ax.set(xscale="log", yscale="log")
+    ax.set(xscale="log")
 
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=Normalize(vmin=0, vmax=nsteps - 1))
     sm.set_array([])
@@ -272,19 +281,19 @@ def plot_gw_spectrum_redshifted(sim: Simulation):
 def main():
     base_dirs = [
         # "mH1e2_512_new_2",
-        "mH1e3_512_new",
+        # "mH1e3_512_new",
         # "mH1e4_512_new",
         # "mH1e5_512_new",
         # "mH1e6_512_new",
         # "mH1e7_512_new",
         # "mH1e8_512_new",
-        # "mH1e9_512_new",
+        "mH1e9_512_new",
     ]
     input_dirs = [Path("../output") / d for d in base_dirs]
     output_dirs = [Path("./figures") / d for d in base_dirs]
 
-    # m_over_Hs = np.array([1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9])
-    m_over_Hs = np.array([1e3])
+    m_over_Hs = np.array([1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9])
+    # m_over_Hs = np.array([1e3])
 
     sims = [
         Simulation(inp, out, m_over_H)
@@ -297,11 +306,11 @@ def main():
         for sim in sims:
             sim.output_dir.mkdir(parents=True, exist_ok=True)
 
-            plot_scale_factor(sim)
-            plot_average_field(sim)
-            plot_energy_densities(sim)
-
-            plot_spectra_num(sim, "field")
+            # plot_scale_factor(sim)
+            # plot_average_field(sim)
+            # plot_energy_densities(sim)
+            #
+            # plot_spectra_num(sim, "field")
             # plot_spectra_num(sim, "derivative")
             # plot_spectra_num(sim, "occupation")
 
@@ -309,7 +318,7 @@ def main():
             # plot_spectra_phys(sim, "derivative")
             # plot_spectra_phys(sim, "occupation")
 
-            plot_gw_spectra(sim)
+            # plot_gw_spectra(sim)
             plot_gw_energies(sim)
 
 

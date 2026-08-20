@@ -8,7 +8,7 @@ from pathlib import Path
 
 def main():
     base_dirs = [
-        "mH1e2_512_new",
+        # "mH1e2_512_new",
         "mH1e3_512_new",
         "mH1e4_512_new",
         "mH1e5_512_new",
@@ -20,7 +20,7 @@ def main():
     input_dirs = [Path("../output") / d for d in base_dirs]
     output_dirs = [Path("./figures") / d for d in base_dirs]
 
-    m_over_Hs = np.array([1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9])
+    m_over_Hs = np.array([1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9])
 
     sims = [
         Simulation(inp, out, m_over_H)
@@ -37,7 +37,7 @@ def main():
         max_kappa = np.nan
 
         for spec in spectra:
-            idx = np.argmax(spec["omega_gw"][2:])
+            idx = np.argmax(spec["omega_gw"][2:150])
             omega = spec["omega_gw"][idx]
 
             if omega > max_omega:
@@ -45,10 +45,15 @@ def main():
                 max_kappa = spec["kappa"][idx]
 
         peaks[i] = max_omega
-        f_peaks[i] = frequency_from_kappa(max_kappa, sim.mu) / sim.mu
+        f_peaks[i] = max_kappa
+        # f_peaks[i] = frequency_from_kappa(max_kappa, sim.mu) / sim.mu
 
+    avg_peak = np.mean(f_peaks)
+    std_peak = np.std(f_peaks)
+    rel_err = std_peak / avg_peak
+    print(f"{avg_peak=:.2E}, {std_peak=:.2E}, {rel_err=:.5E}")
     fig, ax = plt.subplots()
-    ax.plot(m_over_Hs[1:-2], f_peaks[1:-2], linestyle="", marker=".", markersize=8)
+    ax.plot(m_over_Hs[:], f_peaks[:], linestyle="", marker=".", markersize=8)
     ax.set_xscale("log")
     # ax.set_yscale("log")
     ax.set_xlabel(r"$\mu/H$")

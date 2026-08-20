@@ -20,11 +20,25 @@ def main():
         "mH1e3_3",
         "mH1e3_4",
         # "mH1e3_5",
-        "mH1e3_6",
+        # "mH1e3_6",
         # "mH1e3_7",
     ]
+    # base_dirs = [
+    #     "mH1e5_0",
+    #     "mH1e5_1",
+    #     "mH1e5_2",
+    #     "mH1e5_3",
+    #     "mH1e5_4",
+    # ]
+    # base_dirs = [
+    #     "mH1e9_0",
+    #     "mH1e9_1",
+    #     "mH1e9_2",
+    #     "mH1e9_3",
+    #     "mH1e9_4",
+    # ]
     input_dirs = [Path("../output/seed_comparison") / d for d in base_dirs]
-    m_over_H = 1e3
+    m_over_H = 1e9
     sims = [
         Simulation(input_dir, Path("./figures"), m_over_H) for input_dir in input_dirs
     ]
@@ -37,14 +51,15 @@ def main():
     avg_peak = np.mean(peaks)
     std_peak = np.std(peaks)
     print(f"{avg_peak=:.2E}, {std_peak=:.2E}, {std_peak/avg_peak=:.3f}")
-    x = [0, 1, 2, 3, 4, 6]
+    # x = [0, 1, 2, 3, 4, 6, 7, 8]
+    x = [0, 1, 2, 3, 4]
     fig, ax = plt.subplots()
     ax.plot(x, peaks, linestyle="--", color="grey")
     for el, p in zip(x, peaks):
         ax.plot(el, p, marker=".", markersize=20)
     ax.set_ylabel(r"$h^2 \Omega_\mathrm{GW}^\mathrm{peak}$", fontsize=24)
     # ax.set_xlabel(r"$\delta \tilde x$", fontsize=24)
-    save_figure(fig, Path("./figures/seed_comparison.pdf"))
+    save_figure(fig, Path("./figures/seed_comparison_mH1e3.pdf"))
 
     fig, ax = plt.subplots()
     for i, sim in enumerate(sims):
@@ -61,7 +76,7 @@ def main():
     ax.set_ylabel(r"$h^2\Omega_\mathrm{GW}$", fontsize=24)
     ax.set(xscale="log", yscale="log")
     # ax.legend(frameon=False, fontsize=19)
-    savefile = Path("./figures/seed_comparison_spectra.pdf")
+    savefile = Path("./figures/seed_comparison_spectra_mH1e3.pdf")
     save_figure(fig, savefile)
 
 
