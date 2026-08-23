@@ -7,7 +7,9 @@ import matplotlib as mpl
 from Veff_Daniel import EffectivePotential
 from gw_peaks import omega_peaks_best_fit
 from matplotlib.ticker import NullLocator
-from fit_GW_spectra import spectrum_best_fit
+
+# from fit_GW_spectra import gw_template
+from GW_spectrum_SNR import GW_analysis
 from load_data import frequency_from_kappa
 
 plt.rcParams.update(
@@ -27,7 +29,16 @@ plt.rcParams.update(
 
 def plot_compare_sens_curves():
     filenames = [
-        "PLISensCurves/" + filename for filename in os.listdir("PLISensCurves")
+        "PLISensCurves/" + filename
+        for filename in [
+            "bbo_pli.p",
+            "bdecigo_pli.p",
+            "decigo_pli.p",
+            "et_pli.p",
+            "lisa_pli.p",
+            "mu_ares_pli.p",
+        ]
+        # os.listdir("PLISensCurves")
     ]
     freq = dict()
     sens = dict()
@@ -40,20 +51,23 @@ def plot_compare_sens_curves():
     fig.set_size_inches(8, 5)
     ax.set_xscale("log")
     ax.set_yscale("log")
-    for file in filenames:
-        ax.plot(freq[file], sens[file], linewidth=1)
+    colors = plt.rcParams["axes.prop_cycle"].by_key()["color"][1:]
+    for i, file in enumerate(filenames):
+        ax.plot(freq[file], sens[file], linewidth=1, color=colors[i])
         if len(sens[file]) > 1000:
-            step = 8
+            step = 5
         else:
             step = 1
-        ax.fill_between(freq[file][::step], sens[file][::step], 1e-6, alpha=0.075)
+        ax.fill_between(
+            freq[file][::step], sens[file][::step], 1e-6, alpha=0.075, color=colors[i]
+        )
     plot_labels(ax)
 
     ax.set_xlabel(r"$f_0\,\mathrm{[Hz]}$")
     ax.set_ylabel(r"$h^2 \Omega_{\mathrm{GW}, 0}$")
-    ax.set_ylim(1e-32, 1e-6)
-    ax.set_xlim(1e-10, 7e2)
-    ax.set_xticks([10**i for i in range(-10, 3, 2)])
+    ax.set_ylim(2e-19, 3e-7)
+    ax.set_xlim(1e-7, 7e2)
+    ax.set_xticks([10**i for i in range(-7, 3, 2)])
     ax.xaxis.set_minor_locator(NullLocator())
     ax.yaxis.set_minor_locator(NullLocator())
     ax.grid(linestyle="--", alpha=0.4)
@@ -80,48 +94,52 @@ def get_peaks_from_params(gBL, mZp):
 
 
 def plot_labels(ax):
-    colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
-    ax.text(7e-10, 5e-12, r"$\mathrm{SKA}$", c=colors[0], fontsize=17, rotation=90)
-    ax.text(5e-5, 1e-10, r"$\mathrm{LISA}$", c=colors[1], fontsize=17, rotation=295)
+    colors = plt.rcParams["axes.prop_cycle"].by_key()["color"][1:]
+    ax.text(5e-5, 1e-10, r"$\mathrm{LISA}$", c=colors[4], fontsize=17, rotation=295)
     ax.text(
-        1.3e-7, 5e-12, r"$\mu\mathrm{ARES}$", c=colors[2], fontsize=17, rotation=310
+        1.5e-7, 2e-12, r"$\mu\mathrm{ARES}$", c=colors[5], fontsize=17, rotation=315
     )
-    # ax.text(3e1, 1e-10, r"$\mathrm{DECIGO}$", c=colors[3], fontsize=17, rotation=70)
-    ax.text(2e2, 1e-10, r"$\mathrm{ET}$", c=colors[4], fontsize=17, rotation=60)
-    # ax.text(2.5e0, 8e-11, r"$\mathrm{B-DECIGO}$", c=colors[5], fontsize=17, rotation=62)
-    # ax.text(8e0, 4e-11, r"$\mathrm{BBO}$", c=colors[6], fontsize=17, rotation=65)
+    ax.text(3e1, 1e-10, r"$\mathrm{DECIGO}$", c=colors[2], fontsize=17, rotation=70)
+    ax.text(2e2, 1e-10, r"$\mathrm{ET}$", c=colors[3], fontsize=17, rotation=60)
+    ax.text(3e0, 9e-11, r"$\mathrm{B-DECIGO}$", c=colors[1], fontsize=17, rotation=58)
+    ax.text(7e-3, 3e-17, r"$\mathrm{BBO}$", c=colors[0], fontsize=17, rotation=319)
 
 
 if __name__ == "__main__":
     M_PL = 2.435e18
 
     gBLs = np.array([1e-2])
-    mZps = np.array([1e6, 8e5, 5e5, 2.5e5])
+    mZps = np.array([1e5, 2e5, 3e5, 4e5])
     labels = [
-        r"$m_{\rm Z'} = 1 \times 10^{6}$",
-        r"$m_{\rm Z'} = 8 \times 10^{5}$",
-        r"$m_{\rm Z'} = 5 \times 10^{5}$",
-        r"$m_{\rm Z'} = 2.5 \times 10^{5}$",
+        r"$m_{\rm Z'} = 1 \times 10^{5}$",
+        r"$m_{\rm Z'} = 2 \times 10^{5}$",
+        r"$m_{\rm Z'} = 3 \times 10^{5}$",
+        r"$m_{\rm Z'} = 4 \times 10^{5}$",
     ]
-    tamara_filenames = np.array(
-        [
-            "h2OmegaGW_SI_gBL=1.00e-02_mZp=1.00e+06.txt",
-            "h2OmegaGW_SI_gBL=1.00e-02_mZp=8.00e+05.txt",
-            "h2OmegaGW_SI_gBL=1.00e-02_mZp=5.00e+05.txt",
-            "h2OmegaGW_SI_gBL=1.00e-02_mZp=2.50e+05.txt",
-        ]
-    )
-    tamara_data = [
-        np.loadtxt(
-            "./spectra_tamara/" + file,
-            skiprows=1,
-            unpack=True,
-        )
-        for file in tamara_filenames
-    ]
+    # tamara_filenames = np.array(
+    #     [
+    #         "h2OmegaGW_SI_gBL=1.00e-02_mZp=1.00e+06.txt",
+    #         "h2OmegaGW_SI_gBL=1.00e-02_mZp=8.00e+05.txt",
+    #         "h2OmegaGW_SI_gBL=1.00e-02_mZp=5.00e+05.txt",
+    #         "h2OmegaGW_SI_gBL=1.00e-02_mZp=2.50e+05.txt",
+    #     ]
+    # )
+    # tamara_data = [
+    #     np.loadtxt(
+    #         "./spectra_tamara/" + file,
+    #         skiprows=1,
+    #         unpack=True,
+    #     )
+    #     for file in tamara_filenames
+    # ]
 
     fig, ax = plot_compare_sens_curves()
-    f_range = np.logspace(-10, 2, 1000)
+    f_ranges = [
+        np.logspace(0, 2, 100),
+        np.logspace(-0.75, 2, 100),
+        np.logspace(-1.2, 2, 100),
+        np.logspace(-1.2, 2, 100),
+    ]
 
     # Set colormap for GW curves
     cmap = mpl.colormaps["Blues"]
@@ -130,18 +148,26 @@ if __name__ == "__main__":
     ax.set_prop_cycle(cycler(color=colors))
     for gBL in gBLs:
         for i, mZp in enumerate(mZps):
-            f_peak_0, omega_peak_0 = get_peaks_from_params(gBL, mZp)
-            print(f"{f_peak_0=:.2E}, {omega_peak_0=:.2E}")
+            model = EffectivePotential(gBL, mZp, vh_qcd=0.1)
+            model.interpolations()
 
-            mask = f_range > f_peak_0 * (10 ** (-2))
+            m_over_H = model.m_over_H()
+            T_rh = model.find_T_vac()
+            H_star = model.Hubble(T_rh)
+            test = GW_analysis(m_over_H, H_star, T_rh)
             ax.plot(
-                f_range[mask],
-                spectrum_best_fit(f_range, f_peak_0, omega_peak_0)[mask],
+                f_ranges[i],
+                test.GW_template(f_ranges[i]),
                 linewidth=2,
                 label=labels[i],
             )
-    for file in tamara_data:
-        _, f, omega_gw = file
-        ax.plot(f, omega_gw)
-    ax.legend()
+            print(
+                f"{gBL=:.1E}, {mZp=:.2E}, {m_over_H=:.1E}, {test.GW_peak_amplitude()=:.2E}, {test.GW_peak_frequency()=:.2E}"
+            )
+    # for file in tamara_data:
+    #     _, f, omega_gw = file
+    #     f = 2 * np.pi * f
+    #     ax.plot(f, omega_gw)
+    ax.legend(loc="lower left", frameon=False)
+
     fig.savefig("figures/sens_curves.pdf", format="pdf", backend="pgf")
