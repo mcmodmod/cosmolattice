@@ -61,7 +61,8 @@ g_classical_max = np.interp(
 
 # Mask everything outside the Classical Rolling region.
 classical_mask = G > g_classical_max[np.newaxis, :]
-MH_masked = np.ma.masked_where(classical_mask, MH)
+# MH_masked = np.ma.masked_where(classical_mask, MH)
+MH_masked = MH
 
 
 # Requested contour thresholds.
@@ -93,6 +94,23 @@ contours = ax.contourf(
     cmap=cmap,
     norm=norm,
     # extend="both",
+)
+
+g_higgs_grid = 4 * np.pi * 125.1 / (np.sqrt(6) * M)
+
+higgs_mask = G < g_higgs_grid
+
+combined_mask = classical_mask | higgs_mask
+
+MH_masked = np.ma.masked_where(combined_mask, MH)
+
+ax.contour(
+    M,
+    G,
+    MH_masked,
+    levels=[1e3],
+    colors="red",
+    linestyles="solid",
 )
 
 # Colorbar showing the m/H scale.
@@ -147,12 +165,14 @@ ax.plot(
     m[mask],
     g_higgs[mask],
     color="black",
+    # linewidth=5,
 )
 
 ax.plot(
     m_zprime,
     g_bl,
     color="black",
+    # linewidth=5,
 )
 
 

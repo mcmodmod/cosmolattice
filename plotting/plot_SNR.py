@@ -3,8 +3,26 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.colors import ListedColormap
 
 from plot_data import save_figure
+
+# -------------------------------------------------------------------------
+# Plot settings
+# -------------------------------------------------------------------------
+
+x_min, x_max = 5e4, 4e7
+y_min, y_max = 1e-4, 2e-1
+
+m_h = 125.1
+
+region_cmap = ListedColormap(
+    [
+        "navy",  # undetectable
+        "gold",  # detectable
+    ]
+)
+
 
 # -------------------------------------------------------------------------
 # Load exclusion line
@@ -13,22 +31,9 @@ from plot_data import save_figure
 with open("FOPT_exclusion_line.p", "rb") as file:
     g_bl, m_zprime = pickle.load(file)
 
-
-# -------------------------------------------------------------------------
-# Plot limits
-# -------------------------------------------------------------------------
-
-x_min = 5e4
-x_max = 4e7
-y_min = 1e-4
-y_max = 2e-1
-
-g_bl = np.append(g_bl, [y_max])
-m_zprime = np.append(m_zprime, [1e7])
-
-m_fill = np.append(m_zprime, [1e7, x_max])
-g_fill = np.append(g_bl, [y_max, y_max])
-
+# Extend exclusion boundary to the top/right plot edges
+m_fill = np.append(m_zprime, [1e7, 1e7, x_max])
+g_fill = np.append(g_bl, [y_max, y_max, y_max])
 
 # -------------------------------------------------------------------------
 # Load SNR grids
@@ -39,35 +44,37 @@ data = np.load("SNR_scan.npz")
 m_grid = data["m_zprime"]
 g_grid = data["g_bl"]
 
+data2 = np.load("./data/m_over_H_grid.npz")
+
+MH = data2["m_over_H"]
 M, G = np.meshgrid(m_grid, g_grid)
 
 
 # -------------------------------------------------------------------------
-# Allowed parameter region
+# Physical parameter region
 # -------------------------------------------------------------------------
 
-# Classical-rolling boundary
-sort_idx = np.argsort(m_fill)
+# Bubble-percolation boundary
+order = np.argsort(m_fill)
 
 g_classical_max = np.interp(
     m_grid,
-    m_fill[sort_idx],
-    g_fill[sort_idx],
+    m_fill[order],
+    g_fill[order],
     left=np.nan,
     right=np.nan,
 )
 
-classical_mask = G >= g_classical_max[np.newaxis, :]
+classical_mask = G >= g_classical_max[None, :]
 
 
 # m_phi < 2 m_h boundary
-m_h = 125.1
 g_higgs_grid = 4 * np.pi * m_h / (np.sqrt(6) * m_grid)
 
-higgs_mask = G <= g_higgs_grid[np.newaxis, :]
+higgs_mask = G <= g_higgs_grid[None, :]
 
 
-# Everything outside the physical region is masked
+# Combined forbidden region
 forbidden_mask = classical_mask | higgs_mask
 
 
@@ -76,42 +83,27 @@ forbidden_mask = classical_mask | higgs_mask
 # -------------------------------------------------------------------------
 
 experiments = {
-    "LISA": {
-        "snr": data["snr_lisa"],
-        "threshold": 10,
-    },
-    "BBO": {
-        "snr": data["snr_bbo"],
-        "threshold": 10,
-    },
-    "DECIGO": {
-        "snr": data["snr_decigo"],
-        "threshold": 10,
-    },
-    "ET": {
-        "snr": data["snr_et"],
-        "threshold": 5,
-    },
+    "LISA": (data["snr_lisa"], 10),
+    "BBO": (data["snr_bbo"], 10),
+    "DECIGO": (data["snr_decigo"], 10),
+    "ET": (data["snr_et"], 5),
 }
 
 
 # -------------------------------------------------------------------------
-# Create one figure per experiment
+# Plot
 # -------------------------------------------------------------------------
 
-for name, experiment in experiments.items():
+for name, (snr, threshold) in experiments.items():
 
-    snr = experiment["snr"]
-    threshold = experiment["threshold"]
-
+    # Masking is only used for the threshold contour.
     snr_masked = np.ma.masked_invalid(snr)
     snr_masked = np.ma.masked_where(forbidden_mask, snr_masked)
 
-    # 0 = undetectable, 1 = detectable
-    detectable = np.ma.masked_where(
-        forbidden_mask,
-        (snr >= threshold).astype(float),
-    )
+    # Binary field covering the entire SNR grid:
+    # 0 = undetectable
+    # 1 = detectable
+    detectable = (snr >= threshold).astype(float)
 
     fig, ax = plt.subplots()
 
@@ -124,7 +116,7 @@ for name, experiment in experiments.items():
         G,
         detectable,
         levels=[-0.5, 0.5, 1.5],
-        colors=["lightsteelblue", "cornflowerblue"],
+        colors=["navy", "gold"],
         alpha=0.8,
     )
 
@@ -132,10 +124,7 @@ for name, experiment in experiments.items():
     # Detection threshold
     # ---------------------------------------------------------------------
 
-    snr_min = snr_masked.min()
-    snr_max = snr_masked.max()
-
-    if snr_min <= threshold <= snr_max:
+    if snr_masked.min() <= threshold <= snr_masked.max():
         ax.contour(
             M,
             G,
@@ -145,11 +134,28 @@ for name, experiment in experiments.items():
             linewidths=2.5,
         )
 
+    g_higgs_grid = 4 * np.pi * 125.1 / (np.sqrt(6) * M)
+
+    higgs_mask = G < g_higgs_grid
+
+    combined_mask = classical_mask | higgs_mask
+
+    MH_masked = np.ma.masked_where(combined_mask, MH)
+
+    ax.contour(
+        M,
+        G,
+        MH_masked,
+        levels=[1e3],
+        colors="red",
+        linestyles="solid",
+    )
     # ---------------------------------------------------------------------
     # Forbidden regions
     # ---------------------------------------------------------------------
 
-    # Bubble-percolation region
+    # These are drawn on top of the blue background.
+
     ax.fill_between(
         m_fill,
         g_fill,
@@ -158,7 +164,6 @@ for name, experiment in experiments.items():
         zorder=10,
     )
 
-    # m_phi < 2 m_h region
     m = np.logspace(np.log10(x_min), np.log10(x_max), 500)
     g_higgs = 4 * np.pi * m_h / (np.sqrt(6) * m)
 
@@ -180,8 +185,8 @@ for name, experiment in experiments.items():
     )
 
     ax.plot(
-        m_zprime,
-        g_bl,
+        m_fill,
+        g_fill,
         color="black",
         zorder=18,
     )
@@ -210,28 +215,29 @@ for name, experiment in experiments.items():
         zorder=12,
     )
 
-    ax.text(
-        0.97,
-        0.95,
-        name,
-        transform=ax.transAxes,
-        ha="right",
-        va="top",
-        fontsize=18,
+    ax.set_title(name)
+    # ax.text(
+    #     0.97,
+    #     0.95,
+    #     name,
+    #     transform=ax.transAxes,
+    #     ha="right",
+    #     va="top",
+    #     fontsize=18,
+    # )
+
+    # ---------------------------------------------------------------------
+    # Formatting
+    # ---------------------------------------------------------------------
+
+    ax.set(
+        xscale="log",
+        yscale="log",
+        xlim=(x_min, x_max),
+        ylim=(y_min, y_max),
+        xlabel=r"$m_{Z'}\,[\mathrm{GeV}]$",
+        ylabel=r"$g_{B-L}$",
     )
-
-    # ---------------------------------------------------------------------
-    # Plot formatting
-    # ---------------------------------------------------------------------
-
-    ax.set_xscale("log")
-    ax.set_yscale("log")
-
-    ax.set_xlim(x_min, x_max)
-    ax.set_ylim(y_min, y_max)
-
-    ax.set_xlabel(r"$m_{Z'}\,[\mathrm{GeV}]$")
-    ax.set_ylabel(r"$g_{B-L}$")
 
     ax.grid(False)
 
