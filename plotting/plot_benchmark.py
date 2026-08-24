@@ -30,7 +30,7 @@ def plot_average_field_with_sqrtvariance(sim, sl=slice(None)):
     # ax.set(yscale="log")
     ax.set_xlabel(r"$\tilde \eta$")
     # ax.set_ylabel(r"$\langle\tilde\varphi\rangle$")
-    ax.legend()
+    ax.legend(frameon=False)
 
     save_figure(fig, sim.output_dir / "average_field_with_sqrtvar.pdf")
 

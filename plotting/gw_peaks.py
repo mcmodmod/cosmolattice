@@ -23,7 +23,7 @@ def omega_peaks_best_fit_params(m_over_Hs, peaks):
 
 def main():
     base_dirs = [
-        # "mH1e2_512_new",
+        "mH1e2_512_new",
         "mH1e3_512_new",
         "mH1e4_512_new",
         "mH1e5_512_new",
@@ -35,7 +35,7 @@ def main():
     input_dirs = [Path("../output") / d for d in base_dirs]
     output_dirs = [Path("./figures") / d for d in base_dirs]
 
-    m_over_Hs = np.array([1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9])
+    m_over_Hs = np.array([1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9])
 
     sims = [
         Simulation(inp, out, m_over_H)

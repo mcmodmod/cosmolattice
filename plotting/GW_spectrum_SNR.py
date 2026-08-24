@@ -32,6 +32,10 @@ class GW_analysis:
         )
 
     def GW_template(self, f):
+        f = np.asarray(f)
+
+        f_peak = self.GW_peak_frequency()
+
         kappa_from_f_0 = (
             f
             / (2.62e-8)
@@ -39,11 +43,35 @@ class GW_analysis:
             / self.T_rh
             * (100 / self.g_star) ** (1 / 6)
         )
+
         kappa_peak = 1.21
         gamma = 1.43
         p = 0.52
+
         S = gw_template(kappa_from_f_0, kappa_peak, gamma, p)
-        return 5.58e-5 * (100 / self.g_star) ** (1 / 3) * self.m_over_H ** (-2) * S
+
+        amplitude = 5.58e-5 * (100 / self.g_star) ** (1 / 3) * self.m_over_H ** (-2) * S
+
+        # Zero outside one order of magnitude around the peak
+        return np.where(
+            (f >= f_peak / 10) & (f <= 10 * f_peak),
+            amplitude,
+            0.0,
+        )
+
+    # def GW_template(self, f):
+    #     kappa_from_f_0 = (
+    #         f
+    #         / (2.62e-8)
+    #         * self.m_over_H ** (-1)
+    #         / self.T_rh
+    #         * (100 / self.g_star) ** (1 / 6)
+    #     )
+    #     kappa_peak = 1.21
+    #     gamma = 1.43
+    #     p = 0.52
+    #     S = gw_template(kappa_from_f_0, kappa_peak, gamma, p)
+    #     return 5.58e-5 * (100 / self.g_star) ** (1 / 3) * self.m_over_H ** (-2) * S
 
     def SNR(self, t_obs, sens_curve, fmin, fmax):
         """

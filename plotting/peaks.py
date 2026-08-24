@@ -35,7 +35,7 @@ def omega_peaks_best_fit_params(m_over_Hs, peaks, peak_errs):
 
 
 def main():
-    m_over_Hs = np.array([1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9])
+    m_over_Hs = np.array([1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9])
 
     base_dirs = [f"mH1e{int(np.log10(x))}_512_new" for x in m_over_Hs]
 

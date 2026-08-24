@@ -13,6 +13,8 @@ def m_over_H(g_bl, m_zprime):
     return veff.m_over_H()
 
 
+tamara_m, tamara_g = np.loadtxt("tamara_exclusion_line.txt", unpack=True)
+
 with open("FOPT_exclusion_line.p", "rb") as file:
     g_bl, m_zprime = pickle.load(file)
 
@@ -112,6 +114,7 @@ ax.contour(
     colors="red",
     linestyles="solid",
 )
+# ax.plot(tamara_m, tamara_g, color="magenta")
 
 # Colorbar showing the m/H scale.
 cbar = fig.colorbar(

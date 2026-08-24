@@ -134,12 +134,13 @@ if __name__ == "__main__":
     # ]
 
     fig, ax = plot_compare_sens_curves()
-    f_ranges = [
-        np.logspace(0, 2, 100),
-        np.logspace(-0.75, 2, 100),
-        np.logspace(-1.2, 2, 100),
-        np.logspace(-1.2, 2, 100),
-    ]
+    # f_ranges = [
+    # np.logspace(-2, 2, 100),
+    # np.logspace(-0.75, 2, 100),
+    # np.logspace(-1.2, 2, 100),
+    # np.logspace(-1.2, 2, 100),
+    # ]
+    f_range = np.logspace(-5, 2, 1000)
 
     # Set colormap for GW curves
     cmap = mpl.colormaps["Blues"]
@@ -155,9 +156,10 @@ if __name__ == "__main__":
             T_rh = model.find_T_vac()
             H_star = model.Hubble(T_rh)
             test = GW_analysis(m_over_H, H_star, T_rh)
+            mask = test.GW_template(f_range) > 0
             ax.plot(
-                f_ranges[i],
-                test.GW_template(f_ranges[i]),
+                f_range[mask],
+                test.GW_template(f_range[mask]),
                 linewidth=2,
                 label=labels[i],
             )

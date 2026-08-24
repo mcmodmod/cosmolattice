@@ -165,7 +165,7 @@ for i, g_bl in enumerate(g_values):
             snr_grids[name][i, j] = snr
 
 np.savez_compressed(
-    "SNR_scan.npz",
+    "SNR_scan_2.npz",
     m_zprime=m_values,
     g_bl=g_values,
     m_over_H=m_over_H_grid,
@@ -178,88 +178,3 @@ np.savez_compressed(
     snr_muares=snr_grids[r"$\mu$ARES"],
     snr_decigo=snr_grids["DECIGO"],
 )
-# ---------------------------------------------------------------------------
-# Plot detection contours
-# ---------------------------------------------------------------------------
-#
-# M, G = np.meshgrid(m_values, g_values)
-#
-# fig, ax = plt.subplots(figsize=(8, 6))
-#
-# colours = {
-#     "SKA": "tab:purple",
-#     "LISA": "tab:blue",
-#     "BBO": "tab:orange",
-#     "ET": "tab:red",
-#     r"$\mu$ARES": "tab:green",
-#     "DECIGO": "tab:brown",
-# }
-#
-# legend_handles = []
-#
-# for name, experiment in experiments.items():
-#
-#     snr = snr_grids[name]
-#     threshold = experiment["threshold"]
-#
-#     # Only draw the contour if the detection threshold is actually crossed
-#     # somewhere within the scanned parameter space.
-#     if np.nanmin(snr) <= threshold <= np.nanmax(snr):
-#
-#         ax.contourf(
-#             M,
-#             G,
-#             snr,
-#             levels=[threshold, np.inf],
-#             alpha=0.12,
-#         )
-#         ax.contour(
-#             M,
-#             G,
-#             snr,
-#             levels=[threshold],
-#             colors=[colours[name]],
-#             linewidths=2.5,
-#         )
-#
-#         legend_handles.append(
-#             Line2D(
-#                 [0],
-#                 [0],
-#                 color=colours[name],
-#                 linewidth=2.5,
-#                 label=rf"{name}: $\rho={threshold}$",
-#             )
-#         )
-#
-#     else:
-#         print(
-#             f"{name}: threshold rho = {threshold} is not crossed "
-#             f"(SNR range {np.nanmin(snr):.2e} -- {np.nanmax(snr):.2e})."
-#         )
-#
-#
-# # ---------------------------------------------------------------------------
-# # Plot formatting
-# # ---------------------------------------------------------------------------
-#
-# ax.set_xscale("log")
-# ax.set_yscale("log")
-#
-# ax.set_xlabel(r"$m_{Z'}\;[\mathrm{GeV}]$", fontsize=14)
-# ax.set_ylabel(r"$g_{B-L}$", fontsize=14)
-#
-# ax.tick_params(axis="both", which="both", labelsize=12)
-#
-# ax.grid(which="major", alpha=0.25)
-# ax.grid(which="minor", alpha=0.10)
-#
-# ax.legend(
-#     handles=legend_handles,
-#     frameon=False,
-#     fontsize=11,
-#     loc="best",
-# )
-#
-# output_file.parent.mkdir(parents=True, exist_ok=True)
-# save_figure(fig, output_file)
