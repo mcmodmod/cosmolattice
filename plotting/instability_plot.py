@@ -39,8 +39,8 @@ ax.axhline(0.0, linewidth=0.8, alpha=0.4)
 # ax.set_xticklabels([])
 ax.set_xlim(-2.0, 2.0)
 ax.set_ylim(-0.8, 1.25)
-ax.set_xlabel(r"$\phi$", fontsize=25)
-ax.set_ylabel(r"$V_{\mathrm{eff}}(\phi)$", fontsize=25)
+ax.set_xlabel(r"$\varphi$", fontsize=25)
+ax.set_ylabel(r"$V_{\mathrm{eff}}(\varphi)$", fontsize=25)
 ax.legend(frameon=False, fontsize=22)
 save_figure(fig, Path("figures/curvature_at_origin.pdf"))
 
@@ -81,9 +81,9 @@ ax.axvspan(
 ax.axhline(0.0, linewidth=0.8, alpha=0.5)
 ax.axvline(1.0, linestyle="--", linewidth=1.0)
 
-ax.text(0.5, 2.30, "tachyonic", ha="center", va="center", fontsize=24)
+ax.text(0.5, 2.4, "tachyonic", ha="center", va="center", fontsize=24)
 
-ax.text(1.5, 2.30, "oscillatory", ha="center", va="center", fontsize=24)
+ax.text(1.5, 2.4, "oscillatory", ha="center", va="center", fontsize=24)
 
 # ax.annotate(
 #     r"$k_{\mathrm{phys}}=\sqrt{-m_{\mathrm{eff}}^2}$",

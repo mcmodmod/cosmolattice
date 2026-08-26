@@ -7,24 +7,26 @@ import matplotlib as mpl
 from Veff_Daniel import EffectivePotential
 from gw_peaks import omega_peaks_best_fit
 from matplotlib.ticker import NullLocator
+from pathlib import Path
 
 # from fit_GW_spectra import gw_template
 from GW_spectrum_SNR import GW_analysis
 from load_data import frequency_from_kappa
+from plot_data import save_figure
 
-plt.rcParams.update(
-    {
-        "text.usetex": True,
-        "pgf.texsystem": "pdflatex",
-        "axes.labelsize": 18,
-        "legend.fontsize": 13,
-        "xtick.labelsize": 15,
-        "ytick.labelsize": 15,
-        "xtick.direction": "in",
-        "ytick.direction": "in",
-        "figure.constrained_layout.use": True,
-    }
-)
+# plt.rcParams.update(
+#     {
+#         "text.usetex": True,
+#         "pgf.texsystem": "pdflatex",
+#         "axes.labelsize": 18,
+#         "legend.fontsize": 13,
+#         "xtick.labelsize": 15,
+#         "ytick.labelsize": 15,
+#         "xtick.direction": "in",
+#         "ytick.direction": "in",
+#         "figure.constrained_layout.use": True,
+#     }
+# )
 
 
 def plot_compare_sens_curves():
@@ -36,7 +38,7 @@ def plot_compare_sens_curves():
             "decigo_pli.p",
             "et_pli.p",
             "lisa_pli.p",
-            "mu_ares_pli.p",
+            # "mu_ares_pli.p",
         ]
         # os.listdir("PLISensCurves")
     ]
@@ -66,8 +68,8 @@ def plot_compare_sens_curves():
     ax.set_xlabel(r"$f_0\,\mathrm{[Hz]}$")
     ax.set_ylabel(r"$h^2 \Omega_{\mathrm{GW}, 0}$")
     ax.set_ylim(2e-19, 3e-7)
-    ax.set_xlim(1e-7, 7e2)
-    ax.set_xticks([10**i for i in range(-7, 3, 2)])
+    ax.set_xlim(1e-5, 7e2)
+    ax.set_xticks([10**i for i in range(-5, 3, 2)])
     ax.xaxis.set_minor_locator(NullLocator())
     ax.yaxis.set_minor_locator(NullLocator())
     ax.grid(linestyle="--", alpha=0.4)
@@ -95,26 +97,34 @@ def get_peaks_from_params(gBL, mZp):
 
 def plot_labels(ax):
     colors = plt.rcParams["axes.prop_cycle"].by_key()["color"][1:]
-    ax.text(5e-5, 1e-10, r"$\mathrm{LISA}$", c=colors[4], fontsize=17, rotation=295)
-    ax.text(
-        1.5e-7, 2e-12, r"$\mu\mathrm{ARES}$", c=colors[5], fontsize=17, rotation=315
-    )
-    ax.text(3e1, 1e-10, r"$\mathrm{DECIGO}$", c=colors[2], fontsize=17, rotation=70)
-    ax.text(2e2, 1e-10, r"$\mathrm{ET}$", c=colors[3], fontsize=17, rotation=60)
-    ax.text(3e0, 9e-11, r"$\mathrm{B-DECIGO}$", c=colors[1], fontsize=17, rotation=58)
-    ax.text(7e-3, 3e-17, r"$\mathrm{BBO}$", c=colors[0], fontsize=17, rotation=319)
+    ax.text(5e-5, 1e-10, r"$\mathrm{LISA}$", c=colors[4], fontsize=17, rotation=305)
+    # ax.text(
+    #     1.5e-7, 2e-12, r"$\mu\mathrm{ARES}$", c=colors[5], fontsize=17, rotation=315
+    # )
+    ax.text(3e1, 1e-10, r"$\mathrm{DECIGO}$", c=colors[2], fontsize=17, rotation=65)
+    ax.text(2.5e2, 7e-11, r"$\mathrm{ET}$", c=colors[3], fontsize=17, rotation=55)
+    ax.text(3e0, 9e-11, r"$\mathrm{B-DECIGO}$", c=colors[1], fontsize=17, rotation=52)
+    ax.text(7e-3, 3e-17, r"$\mathrm{BBO}$", c=colors[0], fontsize=17, rotation=323)
 
 
 if __name__ == "__main__":
     M_PL = 2.435e18
 
-    gBLs = np.array([1e-2])
-    mZps = np.array([1e5, 2e5, 3e5, 4e5])
+    # gBLs = np.array([1e-2])
+    # mZps = np.array([1e5, 2e5, 3e5, 4e5])
+    # labels = [
+    #     r"$m_{\rm Z'} = 1 \times 10^{5}$",
+    #     r"$m_{\rm Z'} = 2 \times 10^{5}$",
+    #     r"$m_{\rm Z'} = 3 \times 10^{5}$",
+    #     r"$m_{\rm Z'} = 4 \times 10^{5}$",
+    # ]
+    mZps = np.array([2e5])
+    gBLs = np.array([4e-3, 6e-3, 8e-3, 1e-2])
     labels = [
-        r"$m_{\rm Z'} = 1 \times 10^{5}$",
-        r"$m_{\rm Z'} = 2 \times 10^{5}$",
-        r"$m_{\rm Z'} = 3 \times 10^{5}$",
-        r"$m_{\rm Z'} = 4 \times 10^{5}$",
+        r"$g_{B-L} = 4 \times 10^{-3}$",
+        r"$g_{B-L} = 6 \times 10^{-3}$",
+        r"$g_{B-L} = 8 \times 10^{-3}$",
+        r"$g_{B-L} = 1 \times 10^{-2}$",
     ]
     # tamara_filenames = np.array(
     #     [
@@ -134,20 +144,15 @@ if __name__ == "__main__":
     # ]
 
     fig, ax = plot_compare_sens_curves()
-    # f_ranges = [
-    # np.logspace(-2, 2, 100),
-    # np.logspace(-0.75, 2, 100),
-    # np.logspace(-1.2, 2, 100),
-    # np.logspace(-1.2, 2, 100),
-    # ]
     f_range = np.logspace(-5, 2, 1000)
 
     # Set colormap for GW curves
-    cmap = mpl.colormaps["Blues"]
+    # cmap = mpl.colormaps["Blues"]
+    cmap = mpl.colormaps["Reds"]
     colors = [cmap(x) for x in np.linspace(0.5, 1.0, len(mZps) * len(gBLs))]
 
     ax.set_prop_cycle(cycler(color=colors))
-    for gBL in gBLs:
+    for j, gBL in enumerate(gBLs):
         for i, mZp in enumerate(mZps):
             model = EffectivePotential(gBL, mZp, vh_qcd=0.1)
             model.interpolations()
@@ -161,7 +166,7 @@ if __name__ == "__main__":
                 f_range[mask],
                 test.GW_template(f_range[mask]),
                 linewidth=2,
-                label=labels[i],
+                label=labels[j],
             )
             print(
                 f"{gBL=:.1E}, {mZp=:.2E}, {m_over_H=:.1E}, {test.GW_peak_amplitude()=:.2E}, {test.GW_peak_frequency()=:.2E}"
@@ -172,4 +177,5 @@ if __name__ == "__main__":
     #     ax.plot(f, omega_gw)
     ax.legend(loc="lower left", frameon=False)
 
-    fig.savefig("figures/sens_curves.pdf", format="pdf", backend="pgf")
+    # save_figure(fig, Path("figures/sens_curves_gBL1e-2.pdf"))
+    save_figure(fig, Path("figures/sens_curves_mZp2e5.pdf"))
