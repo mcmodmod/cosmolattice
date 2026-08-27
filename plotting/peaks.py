@@ -35,7 +35,7 @@ def omega_peaks_best_fit_params(m_over_Hs, peaks, peak_errs):
 
 
 def main():
-    m_over_Hs = np.array([1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9])
+    m_over_Hs = np.array([1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9])
 
     base_dirs = [f"mH1e{int(np.log10(x))}_512_new" for x in m_over_Hs]
 
@@ -154,7 +154,7 @@ def main():
         yerr=omega_peak_errs,
         linestyle="",
         marker=".",
-        markersize=5,
+        markersize=10,
         capsize=7,
         label="Simulation",
     )
@@ -162,7 +162,7 @@ def main():
         m_over_Hs,
         omega_fit,
         linestyle="-",
-        label=r"Best fit:$h^2 \Omega_\mathrm{GW}^\mathrm{peak} = c (\mu/H)^s$",
+        label=r"Best fit: $c (\mu/H)^s$",
     )
     # ax.plot(
     #     m_over_Hs,
@@ -176,7 +176,7 @@ def main():
     ax.set_xlabel(r"$\mu/H$")
     ax.set_ylabel(r"$h^2 \Omega_\mathrm{GW}^\mathrm{peak}$")
     ax.tick_params(axis="x", which="minor", bottom=False, top=False)
-    ax.legend(frameon=False)
+    # ax.legend(frameon=False)
 
     save_figure(fig, Path("./figures/peaks_OmegaGW.pdf"))
     plt.close(fig)
